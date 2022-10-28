@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -20,7 +21,7 @@ class StockInfoRepositoryTest {
 
     @Test
     public void selectStockALlInfoTest(){
-
-//        assertTrue(testStockInfoRepository.findAll().get(0).isPresent());
+        List<StockInfo> stockInfoList = testStockInfoRepository.findAll().orElse(List.of());
+        assertThat(stockInfoList).isNotEmpty();
     }
 }

@@ -7,5 +7,5 @@ import java.util.List;
 import java.util.Optional;
 
 public interface StockInfoRepository extends Repository<StockInfo,Long> {
-    List<Optional<StockInfo>> findAll();
+    Optional<List<StockInfo>> findAll();
 }
