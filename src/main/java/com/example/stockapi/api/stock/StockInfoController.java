@@ -14,12 +14,20 @@ public class StockInfoController {
     private final StockInfoService stockInfoService;
     @GetMapping("stockInfos")
     public BaseDto<List<StockInfoRes>> getStockInfoList() {
-        List<StockInfoRes> stockInfoRes = stockInfoService.stockInfos();
+        try {
+            List<StockInfoRes> stockInfoRes = stockInfoService.stockInfos();
 
-        return BaseDto.<List<StockInfoRes>>builder()
-                .status(CUSTOM_CODE.RSEULT.SUCCESS.STATUS())
-                .rsltMsg("")
-                .rsltData(stockInfoRes)
-                .build();
+            return BaseDto.<List<StockInfoRes>>builder()
+                    .status(CUSTOM_CODE.RSEULT.SUCCESS.STATUS())
+                    .rsltMsg("")
+                    .rsltData(stockInfoRes)
+                    .build();
+        }
+        catch(Exception e){
+            return BaseDto.<List<StockInfoRes>>builder()
+                    .status(CUSTOM_CODE.RSEULT.ERROR.STATUS())
+                    .rsltMsg(e.getMessage())
+                    .build();
+        }
     }
 }
