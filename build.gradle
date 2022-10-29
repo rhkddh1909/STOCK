@@ -4,6 +4,9 @@ plugins {
 	id 'java'
 	id 'org.springframework.experimental.aot' version '0.12.1'
 	id 'org.hibernate.orm'
+	//QueryDSL
+	// 아래의 plugins 추가
+	id 'com.ewerk.gradle.plugins.querydsl' version '1.0.10'
 }
 
 group = 'com.example'
@@ -33,6 +36,10 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.mockito:mockito-core:4.8.1'
 	implementation 'com.google.code.findbugs:jsr305:3.0.2'
+	//QueryDSL lib
+	implementation 'com.querydsl:querydsl-jpa'
+	// QueryDSL 쿼리 로그 확인 lib
+	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.5.6'
 }
 
 tasks.named('test') {
@@ -42,4 +49,19 @@ tasks.named('test') {
 tasks.named('bootBuildImage') {
 	builder = 'paketobuildpacks/builder:tiny'
 	environment = ['BP_NATIVE_IMAGE': 'true']
+}
+
+def querydslDir = "$buildDir/generated/querydsl"
+querydsl {
+	jpa = true
+	querydslSourcesDir = querydslDir
+}
+sourceSets {
+	main.java.srcDir querydslDir
+}
+configurations {
+	querydsl.extendsFrom compileClasspath
+}
+compileQuerydsl {
+	options.annotationProcessorPath = configurations.querydsl
 }
