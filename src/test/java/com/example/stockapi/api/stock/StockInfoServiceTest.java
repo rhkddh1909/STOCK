@@ -37,7 +37,7 @@ class StockInfoServiceTest {
     }
 
     @Test
-    public void stockInfo_ThenCallfindAllMethodAndGhangeHits(){
+    public void stockInfo_ThenCallfindAllMethodAndReRanking(){
         //Stubbing Mock(given)
         given(mockStockInfoRepository.findAll()).willReturn(Optional.of(List.of(new StockInfo(1L,"0001","주식명",100L,90L,0L,0L,0L))));
 
@@ -51,7 +51,9 @@ class StockInfoServiceTest {
 
         List<StockInfoRes> stockInfoRes = mockStockInfoService.stockInfos();
 
-        assertThat(stockInfoRes.get(0).getHits()).isBetween(1L,3L);
-
+        assertThat(stockInfoRes.get(0).getHits()).isBetween(50L,500L);
+        assertThat(stockInfoRes.get(0).getTradingVolume()).isNotEqualTo(0L);
+        assertThat(stockInfoRes.get(0).getCurrentPrice()).isNotEqualTo(90L);
+        assertThat(stockInfoRes.get(0).getGrowthRate()).isNotEqualTo(-10.0);
     }
 }

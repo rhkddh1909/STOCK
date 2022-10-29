@@ -1,8 +1,8 @@
 package com.example.stockapi.api.repository.domain;
 
 import com.example.stockapi.api.stock.StockInfoRes;
+import com.example.stockapi.api.util.Util;
 import lombok.Getter;
-import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.Entity;
@@ -38,22 +38,47 @@ public class StockInfo {
         this.hits = hits;
     }
 
+    /**
+     * 결과값
+     * */
     public StockInfoRes getStockInfoRes() {
-        return new StockInfoRes(id, stockCode, stockName, startingPrice, currentPrice, getTradingVolume(), getGrowthRate(), hits);
+        return new StockInfoRes(id, stockCode, stockName, startingPrice, currentPrice, getTradingVolume(), Util.getGrowthRate(startingPrice,currentPrice), hits);
     }
 
-    public Double getGrowthRate() {
-        Double tmpStartingPrice = Double.valueOf(startingPrice);
-        Double tmpCurrentPrice = Double.valueOf(currentPrice);
 
-        return Double.valueOf(String.format("%.2f",((tmpCurrentPrice - tmpStartingPrice)/tmpStartingPrice) * 100.0));
-    }
 
+    /**
+     * 거래량
+     * */
     public Long getTradingVolume() {
         return Math.min(sellingCount,buyingCount);
     }
 
-    public void changeHits() {
-        this.hits = hits + ThreadLocalRandom.current().nextLong(1L,3L);
+    /**
+     * 조회수 업데이트
+     * */
+    public void updateHits() {
+        this.hits = hits + Util.getHitsCount(startingPrice,currentPrice);
+    }
+
+    /**
+     * 현재가 업데이트
+     * */
+    public void updateCurrPrice(){
+        Long newPrice = currentPrice + Util.getAskingPrice(currentPrice);
+        Double growthRate = Util.getGrowthRate(startingPrice,newPrice);
+        updateHits();
+        if(Math.abs(growthRate) <= 30.0){
+            updateBuyingCount();
+            updateSellingCount();
+            this.currentPrice = newPrice;
+        }
+    }
+
+    public void updateBuyingCount() {
+        this.buyingCount = buyingCount+Util.getBuyingSellingCount(startingPrice,currentPrice);
+    }
+    public void updateSellingCount() {
+        this.sellingCount = sellingCount+Util.getBuyingSellingCount(startingPrice,currentPrice);
     }
 }
