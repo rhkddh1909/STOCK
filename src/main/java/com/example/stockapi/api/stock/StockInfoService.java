@@ -10,7 +10,6 @@ import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class StockInfoService {
     private final StockInfoRepository stockInfoRepository;
@@ -23,5 +22,20 @@ public class StockInfoService {
                 .stream()
                 .map(StockInfo::getStockInfoRes)
                 .toList();
+    }
+    /**
+     * hits update
+     * */
+    @Transactional
+    public long reRanking() {
+        return stockInfoRepository.findAll().orElseThrow(()-> new StockNoExistException("cannot found stocks"))
+                .stream()
+                .toList()
+                .stream()
+                .mapToLong(item->{
+                    item.changeHits();
+                    return 1L;
+                })
+                .sum();
     }
 }

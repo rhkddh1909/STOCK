@@ -1,13 +1,19 @@
 package com.example.stockapi.api.repository.domain;
 
 import com.example.stockapi.api.stock.StockInfoRes;
+import lombok.Getter;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Entity
+@Getter
+@DynamicUpdate
 public class StockInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,7 +39,7 @@ public class StockInfo {
     }
 
     public StockInfoRes getStockInfoRes() {
-        return new StockInfoRes(id, stockCode, stockName, startingPrice, currentPrice, Math.min(sellingCount,buyingCount), getGrowthRate(), hits);
+        return new StockInfoRes(id, stockCode, stockName, startingPrice, currentPrice, getTradingVolume(), getGrowthRate(), hits);
     }
 
     public Double getGrowthRate() {
@@ -41,5 +47,13 @@ public class StockInfo {
         Double tmpCurrentPrice = Double.valueOf(currentPrice);
 
         return Double.valueOf(String.format("%.2f",((tmpCurrentPrice - tmpStartingPrice)/tmpStartingPrice) * 100.0));
+    }
+
+    public Long getTradingVolume() {
+        return Math.min(sellingCount,buyingCount);
+    }
+
+    public void changeHits() {
+        this.hits = hits + ThreadLocalRandom.current().nextLong(1L,3L);
     }
 }

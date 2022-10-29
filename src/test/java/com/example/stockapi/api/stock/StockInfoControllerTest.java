@@ -1,6 +1,7 @@
 package com.example.stockapi.api.stock;
 
 import com.example.stockapi.api.util.BaseDto;
+import com.example.stockapi.api.util.CUSTOM_CODE;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -33,5 +34,19 @@ class StockInfoControllerTest {
         then(mockStockInfoService).should().stockInfos();
 
         assertThat(stockInfos.getRsltData().get(0)).isEqualTo(new StockInfoRes(1L,"0001","주식명",100L,90L,0L,-10.0,0L));
+    }
+
+    @Test
+    public void reRanking_ThenCallReRankingMethod(){
+        //Stubbing (given)
+        given(mockStockInfoService.reRanking()).willReturn(1L);
+
+        //Controller에서 reRanking 함수가 호출 되었을때
+        BaseDto reRanking = mockStockInfoController.reRanking();
+
+        //Servcie애서 reRanking() 함수가 호출되었는지 검증한다.
+        then(mockStockInfoService).should().reRanking();
+
+        assertThat(reRanking.getStatus()).isEqualTo(CUSTOM_CODE.RSEULT.SUCCESS.STATUS());
     }
 }
