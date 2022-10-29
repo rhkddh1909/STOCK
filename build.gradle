@@ -1,3 +1,9 @@
+buildscript {
+	ext {
+		queryDslVersion = "5.0.0"
+	}
+}
+
 plugins {
 	id 'org.springframework.boot' version '2.7.5'
 	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
@@ -37,7 +43,8 @@ dependencies {
 	testImplementation 'org.mockito:mockito-core:4.8.1'
 	implementation 'com.google.code.findbugs:jsr305:3.0.2'
 	//QueryDSL lib
-	implementation 'com.querydsl:querydsl-jpa'
+	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
+	implementation "com.querydsl:querydsl-apt:${queryDslVersion}"
 	// QueryDSL 쿼리 로그 확인 lib
 	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.5.6'
 }
