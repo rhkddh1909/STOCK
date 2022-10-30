@@ -4,6 +4,8 @@ import com.example.stockapi.api.exception.StockNoExistException;
 import com.example.stockapi.api.repository.StockInfoRepository;
 import com.example.stockapi.api.repository.domain.StockInfo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,5 +48,25 @@ public class StockInfoService {
     @Transactional(readOnly = true)
     public StockTopFiveAllRes<List<StockInfoRes>> stockTopFiveAll(){
         return stockInfoRepository.findTopFiveAll().orElseThrow(()->new StockNoExistException("cannot found StockInfo"));
+    }
+
+    public List<StockInfoRes> stockDetailTopHits(int offset, int limit) {
+        Pageable pageable = PageRequest.of(offset,limit);
+        return stockInfoRepository.findDetailTopHits(pageable);
+    }
+
+    public List<StockInfoRes> stockDetailTopTradingVolume(int offset, int limit) {
+        Pageable pageable = PageRequest.of(offset,limit);
+        return stockInfoRepository.findDetailTopTradingVolume(pageable);
+    }
+
+    public List<StockInfoRes> stockDetailTopGrowthRate(int offset, int limit) {
+        Pageable pageable = PageRequest.of(offset,limit);
+        return stockInfoRepository.findDetailTopGrowthRate(pageable);
+    }
+
+    public List<StockInfoRes> stockDetailBottomGrowthRate(int offset, int limit) {
+        Pageable pageable = PageRequest.of(offset,limit);
+        return stockInfoRepository.findDetailBottomGrowthRate(pageable);
     }
 }

@@ -114,8 +114,7 @@ class StockInfoRepositoryTest {
         stockInfoList.forEach(StockInfo::updateCurrPrice);
         List<Long> tradingVolumeList = Optional.ofNullable(queryFactory
                 .select(Projections.fields(StockInfoRes.class,
-                        stockInfo.id
-                        , stockInfo.stockCode
+                        stockInfo.stockCode
                         , stockInfo.stockName
                         , stockInfo.startingPrice
                         , stockInfo.currentPrice
@@ -146,8 +145,7 @@ class StockInfoRepositoryTest {
         stockInfoList.forEach(StockInfo::updateCurrPrice);
         List<Double> growthRateList = Optional.ofNullable(queryFactory
                 .select(Projections.fields(StockInfoRes.class,
-                        stockInfo.id
-                        , stockInfo.stockCode
+                        stockInfo.stockCode
                         , stockInfo.stockName
                         , stockInfo.startingPrice
                         , stockInfo.currentPrice
@@ -178,8 +176,7 @@ class StockInfoRepositoryTest {
         stockInfoList.forEach(StockInfo::updateCurrPrice);
         List<Double> growthRateList = Optional.ofNullable(queryFactory
                         .select(Projections.fields(StockInfoRes.class,
-                                stockInfo.id
-                                , stockInfo.stockCode
+                                stockInfo.stockCode
                                 , stockInfo.stockName
                                 , stockInfo.startingPrice
                                 , stockInfo.currentPrice
@@ -217,8 +214,7 @@ class StockInfoRepositoryTest {
 
         queryResult.setStockTopFiveTradingVolume(Optional.ofNullable(queryFactory
                 .select(Projections.fields(StockInfoRes.class,
-                        stockInfo.id
-                        , stockInfo.stockCode
+                        stockInfo.stockCode
                         , stockInfo.stockName
                         , stockInfo.startingPrice
                         , stockInfo.currentPrice
@@ -233,8 +229,7 @@ class StockInfoRepositoryTest {
 
         queryResult.setStockTopFiveGrowthRate(Optional.ofNullable(queryFactory
                 .select(Projections.fields(StockInfoRes.class,
-                        stockInfo.id
-                        , stockInfo.stockCode
+                        stockInfo.stockCode
                         , stockInfo.stockName
                         , stockInfo.startingPrice
                         , stockInfo.currentPrice
@@ -249,8 +244,7 @@ class StockInfoRepositoryTest {
 
         queryResult.setStockBottomFiveGrowthRate(Optional.ofNullable(queryFactory
                 .select(Projections.fields(StockInfoRes.class,
-                        stockInfo.id
-                        , stockInfo.stockCode
+                        stockInfo.stockCode
                         , stockInfo.stockName
                         , stockInfo.startingPrice
                         , stockInfo.currentPrice
@@ -313,8 +307,7 @@ class StockInfoRepositoryTest {
         Pageable pageable = PageRequest.of(0,20);
         List<Long> tradingVolumeList = Optional.ofNullable(queryFactory
                         .select(Projections.fields(StockInfoRes.class,
-                                stockInfo.id
-                                , stockInfo.stockCode
+                                stockInfo.stockCode
                                 , stockInfo.stockName
                                 , stockInfo.startingPrice
                                 , stockInfo.currentPrice
@@ -353,8 +346,7 @@ class StockInfoRepositoryTest {
         Pageable pageable = PageRequest.of(0,20);
         List<Double> growthRateList = Optional.ofNullable(queryFactory
                         .select(Projections.fields(StockInfoRes.class,
-                                stockInfo.id
-                                , stockInfo.stockCode
+                                stockInfo.stockCode
                                 , stockInfo.stockName
                                 , stockInfo.startingPrice
                                 , stockInfo.currentPrice
@@ -393,8 +385,7 @@ class StockInfoRepositoryTest {
         Pageable pageable = PageRequest.of(0,20);
         List<Double> growthRateList = Optional.ofNullable(queryFactory
                         .select(Projections.fields(StockInfoRes.class,
-                                stockInfo.id
-                                , stockInfo.stockCode
+                                stockInfo.stockCode
                                 , stockInfo.stockName
                                 , stockInfo.startingPrice
                                 , stockInfo.currentPrice
