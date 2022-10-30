@@ -9,30 +9,30 @@ import static org.assertj.core.api.Assertions.assertThat;
 class StockInfoTest {
     @Test
     public void stockInfo_getStockInfoResTest(){
-        StockInfo stockInfoTest = new StockInfo(1L,"0001","주식명",100L,90L,10L,20L,0L);
+        StockInfo stockInfoTest = new StockInfo("0001","주식명",100L,90L,10L,20L,0L);
 
         StockInfoRes stockInfoResTest = stockInfoTest.getStockInfoRes();
 
-        assertThat(stockInfoResTest).isEqualTo(new StockInfoRes(1L,"0001","주식명",100L, 90L, 10L,-10.0,0L));
+        assertThat(stockInfoResTest).isEqualTo(new StockInfoRes("0001","주식명",100L, 90L, 10L,-10.0,0L));
     }
 
     @Test
     public void stockInfo_getTradingVolumeTest(){
-        StockInfo stockInfoTest = new StockInfo(1L,"0001","주식명",100L,90L,10L,20L,0L);
+        StockInfo stockInfoTest = new StockInfo("0001","주식명",100L,90L,10L,20L,0L);
 
         assertThat(stockInfoTest.getTradingVolume()).isEqualTo(10L);
     }
 
     @Test
     public void stockInfo_updateHitsTest(){
-        StockInfo stockInfoTest = new StockInfo(1L,"0001","주식명",100L,90L,10L,20L,0L);
+        StockInfo stockInfoTest = new StockInfo("0001","주식명",100L,90L,10L,20L,0L);
         stockInfoTest.updateHits();
         assertThat(stockInfoTest.getHits()).isBetween(50L,500L);
     }
 
     @Test
     public void stockInfo_updateCurrentPriceTest(){
-        StockInfo stockInfoTest = new StockInfo(1L,"0001","주식명",100L,90L,10L,20L,0L);
+        StockInfo stockInfoTest = new StockInfo("0001","주식명",100L,90L,10L,20L,0L);
         for(int i = 0; i < 100; i++) {
             Long currentPrice = stockInfoTest.getCurrentPrice();
             Long hits = stockInfoTest.getHits();
@@ -59,7 +59,7 @@ class StockInfoTest {
 
     @Test
     public void stockInfo_updateBuyingSellingCount(){
-        StockInfo stockInfoTest = new StockInfo(1L,"0001","주식명",100L,90L,10L,20L,0L);
+        StockInfo stockInfoTest = new StockInfo("0001","주식명",100L,90L,10L,20L,0L);
         stockInfoTest.updateBuyingCount();
         stockInfoTest.updateSellingCount();
 

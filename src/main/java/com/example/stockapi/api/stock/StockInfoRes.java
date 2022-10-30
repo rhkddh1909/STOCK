@@ -7,8 +7,6 @@ import lombok.Getter;
 @Getter
 @EqualsAndHashCode
 public class StockInfoRes {
-    private Long id;
-
     private String stockCode;
 
     private String stockName;
@@ -21,8 +19,7 @@ public class StockInfoRes {
     private Double growthRate;
     private Long hits;
 
-    public StockInfoRes(Long id, String stockCode, String stockName, Long startingPrice, Long currentPrice, Long tradingVolume, Double growthRate, Long hits) {
-        this.id = id;
+    public StockInfoRes(String stockCode, String stockName, Long startingPrice, Long currentPrice, Long tradingVolume, Double growthRate, Long hits) {
         this.stockCode = stockCode;
         this.stockName = stockName;
         this.currentPrice = currentPrice;

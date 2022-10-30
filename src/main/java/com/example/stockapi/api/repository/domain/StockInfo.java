@@ -16,8 +16,6 @@ import java.util.concurrent.ThreadLocalRandom;
 @DynamicUpdate
 public class StockInfo {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
     private String stockCode;
     private String stockName;
     private Long startingPrice;
@@ -27,8 +25,7 @@ public class StockInfo {
     private Long hits;
     protected StockInfo() {}
 
-    public StockInfo(Long id, String stockCode, String stockName, Long startingPrice, Long currentPrice, Long sellingCount, Long buyingCount, Long hits) {
-        this.id = id;
+    public StockInfo(String stockCode, String stockName, Long startingPrice, Long currentPrice, Long sellingCount, Long buyingCount, Long hits) {
         this.stockCode = stockCode;
         this.stockName = stockName;
         this.startingPrice = startingPrice;
@@ -42,7 +39,7 @@ public class StockInfo {
      * 결과값
      * */
     public StockInfoRes getStockInfoRes() {
-        return new StockInfoRes(id, stockCode, stockName, startingPrice, currentPrice, getTradingVolume(), Util.getGrowthRate(startingPrice,currentPrice), hits);
+        return new StockInfoRes(stockCode, stockName, startingPrice, currentPrice, getTradingVolume(), Util.getGrowthRate(startingPrice,currentPrice), hits);
     }
 
 

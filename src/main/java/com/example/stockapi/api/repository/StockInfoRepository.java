@@ -10,6 +10,7 @@ import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.MathExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.TestOnly;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -92,13 +93,13 @@ public class StockInfoRepository{
 
     public Optional<StockTopFiveAllRes<List<StockInfoRes>>> findTopFiveAll() {
         StockTopFiveAllRes<List<StockInfoRes>> queryResult = new StockTopFiveAllRes<List<StockInfoRes>>();
-        queryResult.setStockTopFiveHits(Optional.ofNullable(queryFactory
+        queryResult.setStockTopFiveHits(Optional.of(queryFactory
                 .selectFrom(stockInfo)
                 .orderBy(stockInfo.hits.desc())
                 .limit(5)
                 .fetch()
                 .stream()
-                .map(item -> item.getStockInfoRes())
+                .map(StockInfo::getStockInfoRes)
                 .toList()).orElseThrow(()->new QueryNoExistException("cannot found HitsBottomFive in query")));
 
         queryResult.setStockTopFiveTradingVolume(Optional.ofNullable(queryFactory
@@ -110,7 +111,7 @@ public class StockInfoRepository{
                         , stockInfo.currentPrice
                         , stockInfo.hits
                         , new CaseBuilder().when(stockInfo.buyingCount.lt(stockInfo.sellingCount)).then(stockInfo.buyingCount).otherwise(stockInfo.sellingCount).as("tradingVolume")
-                        , MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.currentPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00), 2).as("growthRate")
+                        , MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.startingPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00), 2).as("growthRate")
                 ))
                 .from(stockInfo)
                 .orderBy(new CaseBuilder().when(stockInfo.buyingCount.lt(stockInfo.sellingCount)).then(stockInfo.buyingCount).otherwise(stockInfo.sellingCount).desc())
@@ -126,10 +127,10 @@ public class StockInfoRepository{
                         , stockInfo.currentPrice
                         , stockInfo.hits
                         , new CaseBuilder().when(stockInfo.buyingCount.lt(stockInfo.sellingCount)).then(stockInfo.buyingCount).otherwise(stockInfo.sellingCount).as("tradingVolume")
-                        , MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.currentPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00), 2).as("growthRate")
+                        , MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.startingPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00), 2).as("growthRate")
                 ))
                 .from(stockInfo)
-                .orderBy(MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.currentPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00), 2).desc())
+                .orderBy(MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.startingPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00), 2).desc())
                 .limit(5)
                 .fetch()).orElseThrow(()->new QueryNoExistException("cannot found GrowthRateTopFive in query")));
 
@@ -142,13 +143,13 @@ public class StockInfoRepository{
                         , stockInfo.currentPrice
                         , stockInfo.hits
                         , new CaseBuilder().when(stockInfo.buyingCount.lt(stockInfo.sellingCount)).then(stockInfo.buyingCount).otherwise(stockInfo.sellingCount).as("tradingVolume")
-                        , MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.currentPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00), 2).as("growthRate")
+                        , MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.startingPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00), 2).as("growthRate")
                 ))
                 .from(stockInfo)
-                .orderBy(MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.currentPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00), 2).asc())
+                .orderBy(MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.startingPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00), 2).asc())
                 .limit(5)
                 .fetch()).orElseThrow(()->new QueryNoExistException("cannot found GrowthRateBottomFive in query")));
 
-        return Optional.ofNullable(queryResult);
+        return Optional.of(queryResult);
     }
 }

@@ -1,61 +1,81 @@
 package com.example.stockapi.api.repository;
 
+import com.example.stockapi.api.exception.QueryNoExistException;
 import com.example.stockapi.api.repository.domain.StockInfo;
 import com.example.stockapi.api.stock.StockInfoRes;
 import com.example.stockapi.api.stock.StockTopFiveAllRes;
 import com.example.stockapi.api.util.Util;
+import com.example.stockapi.config.QuerydslTestConfiguration;
+import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.CaseBuilder;
+import com.querydsl.core.types.dsl.MathExpressions;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.context.SpringBootTest;
-
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
+import org.springframework.test.context.ActiveProfiles;
 import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
+import static com.example.stockapi.api.repository.domain.QStockInfo.stockInfo;
+import static com.example.stockapi.api.util.Util.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
+@DataJpaTest
+@ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@SpringBootTest
+@Import(QuerydslTestConfiguration.class)
 class StockInfoRepositoryTest {
-    @Autowired
     private StockInfoRepository testStockInfoRepository;
+    @Autowired
+    private JPAQueryFactory queryFactory;
 
     @Test
     public void selectStockInfo_findAllTest(){
-        List<StockInfo> stockInfoList = testStockInfoRepository.findAll().orElse(List.of());
-        assertThat(stockInfoList).isNotEmpty();
+        assertThat(Optional.of(queryFactory.selectFrom(stockInfo).fetch()).orElse(List.of())).isNotEmpty();
     }
 
     @Test
     @Transactional
     public void updateStockInfo_HitsTest(){
-        List<StockInfo> stockInfoList = testStockInfoRepository.findAll().orElse(List.of());
-
-        stockInfoList.stream().forEach(item->item.updateHits());
-
-        stockInfoList = testStockInfoRepository.findAll().orElse(List.of());
-
-        stockInfoList.stream().forEach(item->assertThat(item.getHits()).isBetween(1L,3L));
-
+        Optional.of(queryFactory
+                .selectFrom(stockInfo)
+                .fetch())
+                .orElse(List.of())
+                .stream()
+                .forEach(item->item.updateHits());
+        Optional.of(queryFactory
+                .selectFrom(stockInfo)
+                .fetch())
+                .orElse(List.of())
+                .stream()
+                .forEach(item->assertThat(item.getHits()).isBetween(Util.checkGrowthRate.apply(Util.getGrowthRate(item.getStartingPrice(),item.getCurrentPrice()))/10L, Util.checkGrowthRate.apply(Util.getGrowthRate(item.getStartingPrice(),item.getCurrentPrice()))));
     }
 
     @Test
     @Transactional
     public void updateStockInfo_currentPriceTest(){
-        List<StockInfo> stockInfoList = testStockInfoRepository.findAll().orElse(List.of());
-
+        List<StockInfo> stockInfoList = Optional.of(queryFactory.selectFrom(stockInfo).fetch()).orElse(List.of());
         List<Long> askingPriceList = stockInfoList.stream()
-                .map(item-> Util.checkPrice.apply(item.getCurrentPrice()))
+                .map(item-> checkPrice.apply(item.getCurrentPrice()))
                 .toList();
-        List<Long> checkGrowthRateList = IntStream.range(0,stockInfoList.size())
-                .mapToLong(item -> Util.checkGrowthRate.apply(Util.getGrowthRate(stockInfoList.get(item).getStartingPrice(),stockInfoList.get(item).getCurrentPrice())))
+        List<Long> checkGrowthRateList = stockInfoList.stream().mapToLong(info -> checkGrowthRate.apply(getGrowthRate(info.getStartingPrice(), info.getCurrentPrice())))
                 .boxed()
                 .toList();
 
-        stockInfoList.stream().forEach(item->item.updateCurrPrice());
+        stockInfoList.forEach(StockInfo::updateCurrPrice);
 
-        List<StockInfo> stockInfoAfterList = testStockInfoRepository.findAll().orElse(List.of());
+        List<StockInfo> stockInfoAfterList = Optional.of(queryFactory.selectFrom(stockInfo).fetch()).orElse(List.of());
 
         IntStream.range(0,stockInfoList.size()).forEach(item->{
             assertThat(stockInfoAfterList.get(item).getCurrentPrice())
@@ -69,50 +89,340 @@ class StockInfoRepositoryTest {
 
     @Test
     public void selectStockInfo_findHitsTopFiveTest(){
-        List<StockInfo> stockInfoList = testStockInfoRepository.findHitsTopFive().orElse(List.of());
+        List<StockInfo> stockInfoList = Optional.of(queryFactory.selectFrom(stockInfo).fetch()).orElse(List.of());
+        stockInfoList.forEach(StockInfo::updateCurrPrice);
+        List<Long> hitsList = Optional.ofNullable(queryFactory
+                .selectFrom(stockInfo)
+                .orderBy(stockInfo.hits.desc())
+                .limit(5)
+                .fetch())
+                .orElse(List.of())
+                .stream()
+                .mapToLong(StockInfo::getHits)
+                .boxed()
+                .collect(Collectors.toList());
 
-        assertThat(stockInfoList).isNotEmpty();
-        assertThat(stockInfoList.size()).isEqualTo(5);
+        List<Long> tmpHitsList = new ArrayList<Long>(hitsList);
+        Collections.sort(hitsList,Collections.reverseOrder());
+        assertThat(tmpHitsList).isEqualTo(hitsList);
+        assertThat(hitsList.size()).isEqualTo(5);
     }
 
     @Test
     public void selectStockInfo_findTradingVolumeTopFiveTest(){
-        List<StockInfoRes> stockInfoResList = testStockInfoRepository.findTradingVolumeTopFive().orElse(List.of());
+        List<StockInfo> stockInfoList = Optional.of(queryFactory.selectFrom(stockInfo).fetch()).orElse(List.of());
+        stockInfoList.forEach(StockInfo::updateCurrPrice);
+        List<Long> tradingVolumeList = Optional.ofNullable(queryFactory
+                .select(Projections.fields(StockInfoRes.class,
+                        stockInfo.id
+                        , stockInfo.stockCode
+                        , stockInfo.stockName
+                        , stockInfo.startingPrice
+                        , stockInfo.currentPrice
+                        , stockInfo.hits
+                        , new CaseBuilder().when(stockInfo.buyingCount.lt(stockInfo.sellingCount)).then(stockInfo.buyingCount).otherwise(stockInfo.sellingCount).as("tradingVolume")
+                        , MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.currentPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00),2).as("growthRate")
+                ))
+                .from(stockInfo)
+                .orderBy(new CaseBuilder().when(stockInfo.buyingCount.lt(stockInfo.sellingCount)).then(stockInfo.buyingCount).otherwise(stockInfo.sellingCount).desc())
+                .limit(5)
+                .fetch())
+                .orElse(List.of())
+                .stream()
+                .mapToLong(StockInfoRes::getTradingVolume)
+                .boxed()
+                .collect(Collectors.toList());
 
-        assertThat(stockInfoResList).isNotEmpty();
-        assertThat(stockInfoResList.size()).isEqualTo(5);
+        List<Long> tmpTradingVolumeList = new ArrayList<Long>(tradingVolumeList);
+        Collections.sort(tradingVolumeList,Collections.reverseOrder());
+        assertThat(tradingVolumeList).isNotEmpty();
+        assertThat(tmpTradingVolumeList).isEqualTo(tradingVolumeList);
+        assertThat(tradingVolumeList.size()).isEqualTo(5);
     }
 
     @Test
     public void selectStockInfo_findGrowthRateTopFiveTest(){
-        List<StockInfoRes> stockInfoResList = testStockInfoRepository.findGrowthRateTopFive().orElse(List.of());
+        List<StockInfo> stockInfoList = Optional.of(queryFactory.selectFrom(stockInfo).fetch()).orElse(List.of());
+        stockInfoList.forEach(StockInfo::updateCurrPrice);
+        List<Double> growthRateList = Optional.ofNullable(queryFactory
+                .select(Projections.fields(StockInfoRes.class,
+                        stockInfo.id
+                        , stockInfo.stockCode
+                        , stockInfo.stockName
+                        , stockInfo.startingPrice
+                        , stockInfo.currentPrice
+                        , stockInfo.hits
+                        , new CaseBuilder().when(stockInfo.buyingCount.lt(stockInfo.sellingCount)).then(stockInfo.buyingCount).otherwise(stockInfo.sellingCount).as("tradingVolume")
+                        , MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.currentPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00),2).as("growthRate")
+                ))
+                .from(stockInfo)
+                .orderBy(MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.currentPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00),2).desc())
+                .limit(5)
+                .fetch())
+                .orElse(List.of())
+                .stream()
+                .mapToDouble(StockInfoRes::getGrowthRate)
+                .boxed()
+                .collect(Collectors.toList());
 
-        assertThat(stockInfoResList).isNotEmpty();
-        assertThat(stockInfoResList.size()).isEqualTo(5);
+        List<Double> tmpGrowthRateList = new ArrayList<Double>(growthRateList);
+        growthRateList.sort(Collections.reverseOrder());
+        assertThat(growthRateList).isNotEmpty();
+        assertThat(tmpGrowthRateList).isEqualTo(growthRateList);
+        assertThat(growthRateList.size()).isEqualTo(5);
     }
 
     @Test
     public void selectStockInfo_findGrowthRateBottomFiveTest(){
-        List<StockInfoRes> stockInfoResList = testStockInfoRepository.findGrowthRateBottomFive().orElse(List.of());
+        List<StockInfo> stockInfoList = Optional.of(queryFactory.selectFrom(stockInfo).fetch()).orElse(List.of());
+        stockInfoList.forEach(StockInfo::updateCurrPrice);
+        List<Double> growthRateList = Optional.ofNullable(queryFactory
+                        .select(Projections.fields(StockInfoRes.class,
+                                stockInfo.id
+                                , stockInfo.stockCode
+                                , stockInfo.stockName
+                                , stockInfo.startingPrice
+                                , stockInfo.currentPrice
+                                , stockInfo.hits
+                                , new CaseBuilder().when(stockInfo.buyingCount.lt(stockInfo.sellingCount)).then(stockInfo.buyingCount).otherwise(stockInfo.sellingCount).as("tradingVolume")
+                                , MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.currentPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00), 2).as("growthRate")
+                        ))
+                        .from(stockInfo)
+                        .orderBy(MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.currentPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00), 2).asc())
+                        .limit(5)
+                        .fetch())
+                .orElse(List.of())
+                .stream()
+                .mapToDouble(StockInfoRes::getGrowthRate)
+                .boxed()
+                .collect(Collectors.toList());
 
-        assertThat(stockInfoResList).isNotEmpty();
-        assertThat(stockInfoResList.size()).isEqualTo(5);
+        List<Double> tmpGrowthRateList = new ArrayList<>(growthRateList);
+        Collections.sort(growthRateList);
+        assertThat(growthRateList).isNotEmpty();
+        assertThat(growthRateList.size()).isEqualTo(5);
     }
 
     @Test
     public void selectStockInfo_findTopFiveAllTest(){
-        StockTopFiveAllRes<List<StockInfoRes>> stockTopFiveAllRes = testStockInfoRepository.findTopFiveAll().orElse(new StockTopFiveAllRes<List<StockInfoRes>>());
+        StockTopFiveAllRes<List<StockInfoRes>> queryResult = new StockTopFiveAllRes<List<StockInfoRes>>();
+        queryResult.setStockTopFiveHits(Optional.of(queryFactory
+                .selectFrom(stockInfo)
+                .orderBy(stockInfo.hits.desc())
+                .limit(5)
+                .fetch()
+                .stream()
+                .map(StockInfo::getStockInfoRes)
+                .toList()).orElseThrow(()->new QueryNoExistException("cannot found HitsBottomFive in query")));
 
-        assertThat(stockTopFiveAllRes.getStockTopFiveHits()).isNotEmpty();
-        assertThat(stockTopFiveAllRes.getStockTopFiveHits().size()).isEqualTo(5);
+        queryResult.setStockTopFiveTradingVolume(Optional.ofNullable(queryFactory
+                .select(Projections.fields(StockInfoRes.class,
+                        stockInfo.id
+                        , stockInfo.stockCode
+                        , stockInfo.stockName
+                        , stockInfo.startingPrice
+                        , stockInfo.currentPrice
+                        , stockInfo.hits
+                        , new CaseBuilder().when(stockInfo.buyingCount.lt(stockInfo.sellingCount)).then(stockInfo.buyingCount).otherwise(stockInfo.sellingCount).as("tradingVolume")
+                        , MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.currentPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00), 2).as("growthRate")
+                ))
+                .from(stockInfo)
+                .orderBy(new CaseBuilder().when(stockInfo.buyingCount.lt(stockInfo.sellingCount)).then(stockInfo.buyingCount).otherwise(stockInfo.sellingCount).desc())
+                .limit(5)
+                .fetch()).orElseThrow(()->new QueryNoExistException("cannot found TradingVolumeTopFive in query")));
 
-        assertThat(stockTopFiveAllRes.getStockTopFiveTradingVolume()).isNotEmpty();
-        assertThat(stockTopFiveAllRes.getStockTopFiveTradingVolume().size()).isEqualTo(5);
+        queryResult.setStockTopFiveGrowthRate(Optional.ofNullable(queryFactory
+                .select(Projections.fields(StockInfoRes.class,
+                        stockInfo.id
+                        , stockInfo.stockCode
+                        , stockInfo.stockName
+                        , stockInfo.startingPrice
+                        , stockInfo.currentPrice
+                        , stockInfo.hits
+                        , new CaseBuilder().when(stockInfo.buyingCount.lt(stockInfo.sellingCount)).then(stockInfo.buyingCount).otherwise(stockInfo.sellingCount).as("tradingVolume")
+                        , MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.currentPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00), 2).as("growthRate")
+                ))
+                .from(stockInfo)
+                .orderBy(MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.currentPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00), 2).desc())
+                .limit(5)
+                .fetch()).orElseThrow(()->new QueryNoExistException("cannot found GrowthRateTopFive in query")));
 
-        assertThat(stockTopFiveAllRes.getStockTopFiveGrowthRate()).isNotEmpty();
-        assertThat(stockTopFiveAllRes.getStockTopFiveGrowthRate().size()).isEqualTo(5);
+        queryResult.setStockBottomFiveGrowthRate(Optional.ofNullable(queryFactory
+                .select(Projections.fields(StockInfoRes.class,
+                        stockInfo.id
+                        , stockInfo.stockCode
+                        , stockInfo.stockName
+                        , stockInfo.startingPrice
+                        , stockInfo.currentPrice
+                        , stockInfo.hits
+                        , new CaseBuilder().when(stockInfo.buyingCount.lt(stockInfo.sellingCount)).then(stockInfo.buyingCount).otherwise(stockInfo.sellingCount).as("tradingVolume")
+                        , MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.currentPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00), 2).as("growthRate")
+                ))
+                .from(stockInfo)
+                .orderBy(MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.currentPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00), 2).asc())
+                .limit(5)
+                .fetch()).orElseThrow(()->new QueryNoExistException("cannot found GrowthRateBottomFive in query")));
 
-        assertThat(stockTopFiveAllRes.getStockBottomFiveGrowthRate()).isNotEmpty();
-        assertThat(stockTopFiveAllRes.getStockBottomFiveGrowthRate().size()).isEqualTo(5);
+        assertThat(queryResult.getStockTopFiveHits()).isNotEmpty();
+        assertThat(queryResult.getStockTopFiveHits().size()).isEqualTo(5);
+
+        assertThat(queryResult.getStockTopFiveTradingVolume()).isNotEmpty();
+        assertThat(queryResult.getStockTopFiveTradingVolume().size()).isEqualTo(5);
+
+        assertThat(queryResult.getStockTopFiveGrowthRate()).isNotEmpty();
+        assertThat(queryResult.getStockTopFiveGrowthRate().size()).isEqualTo(5);
+
+        assertThat(queryResult.getStockBottomFiveGrowthRate()).isNotEmpty();
+        assertThat(queryResult.getStockBottomFiveGrowthRate().size()).isEqualTo(5);
+    }
+
+    @Test
+    public void selectStockInfo_findDetailTopHits(){
+        List<StockInfo> stockInfoList = Optional.of(queryFactory.selectFrom(stockInfo).fetch()).orElse(List.of());
+        stockInfoList.forEach(StockInfo::updateCurrPrice);
+        Pageable pageable = PageRequest.of(0,20);
+        List<Long> hitsList = Optional.ofNullable(queryFactory
+                        .selectFrom(stockInfo)
+                        .orderBy(stockInfo.hits.desc())
+                        .offset(pageable.getOffset())
+                        .limit(pageable.getPageSize())
+                        .fetch())
+                .orElse(List.of())
+                .stream()
+                .mapToLong(StockInfo::getHits)
+                .boxed()
+                .collect(Collectors.toList());
+
+        Page<Long> page = PageableExecutionUtils.getPage(hitsList,pageable,() -> {return 100;});
+
+        List<Long> list = page.get().collect(Collectors.toList());
+        List<Long> tmplist = new ArrayList<>(list);
+
+        Collections.sort(list,Collections.reverseOrder());
+
+        assertThat(page.getTotalElements()).isEqualTo(100);
+        assertThat(page.getTotalPages()).isEqualTo(5);
+        assertThat(page.getSize()).isEqualTo(20);
+        assertThat(tmplist).isEqualTo(list);
+    }
+
+    @Test
+    public void selectStockInfo_findDetailTopTradingVolume(){
+        List<StockInfo> stockInfoList = Optional.of(queryFactory.selectFrom(stockInfo).fetch()).orElse(List.of());
+        stockInfoList.forEach(StockInfo::updateCurrPrice);
+        Pageable pageable = PageRequest.of(0,20);
+        List<Long> tradingVolumeList = Optional.ofNullable(queryFactory
+                        .select(Projections.fields(StockInfoRes.class,
+                                stockInfo.id
+                                , stockInfo.stockCode
+                                , stockInfo.stockName
+                                , stockInfo.startingPrice
+                                , stockInfo.currentPrice
+                                , stockInfo.hits
+                                , new CaseBuilder().when(stockInfo.buyingCount.lt(stockInfo.sellingCount)).then(stockInfo.buyingCount).otherwise(stockInfo.sellingCount).as("tradingVolume")
+                                , MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.currentPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00),2).as("growthRate")
+                        ))
+                        .from(stockInfo)
+                        .orderBy(new CaseBuilder().when(stockInfo.buyingCount.lt(stockInfo.sellingCount)).then(stockInfo.buyingCount).otherwise(stockInfo.sellingCount).desc())
+                        .offset(pageable.getOffset())
+                        .limit(pageable.getPageSize())
+                        .fetch())
+                .orElse(List.of())
+                .stream()
+                .mapToLong(StockInfoRes::getTradingVolume)
+                .boxed()
+                .collect(Collectors.toList());
+
+        Page<Long> page = PageableExecutionUtils.getPage(tradingVolumeList,pageable,() -> {return 100;});
+
+        List<Long> list = page.get().collect(Collectors.toList());
+        List<Long> tmplist = new ArrayList<>(list);
+
+        Collections.sort(list,Collections.reverseOrder());
+
+        assertThat(page.getTotalElements()).isEqualTo(100);
+        assertThat(page.getTotalPages()).isEqualTo(5);
+        assertThat(page.getSize()).isEqualTo(20);
+        assertThat(tmplist).isEqualTo(list);
+    }
+
+    @Test
+    public void selectStockInfo_findDetailTopGrowThRate(){
+        List<StockInfo> stockInfoList = Optional.of(queryFactory.selectFrom(stockInfo).fetch()).orElse(List.of());
+        stockInfoList.forEach(StockInfo::updateCurrPrice);
+        Pageable pageable = PageRequest.of(0,20);
+        List<Double> growthRateList = Optional.ofNullable(queryFactory
+                        .select(Projections.fields(StockInfoRes.class,
+                                stockInfo.id
+                                , stockInfo.stockCode
+                                , stockInfo.stockName
+                                , stockInfo.startingPrice
+                                , stockInfo.currentPrice
+                                , stockInfo.hits
+                                , new CaseBuilder().when(stockInfo.buyingCount.lt(stockInfo.sellingCount)).then(stockInfo.buyingCount).otherwise(stockInfo.sellingCount).as("tradingVolume")
+                                , MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.currentPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00),2).as("growthRate")
+                        ))
+                        .from(stockInfo)
+                        .orderBy(MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.currentPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00),2).desc())
+                        .offset(pageable.getOffset())
+                        .limit(pageable.getPageSize())
+                        .fetch())
+                .orElse(List.of())
+                .stream()
+                .mapToDouble(StockInfoRes::getGrowthRate)
+                .boxed()
+                .collect(Collectors.toList());
+
+        Page<Double> page = PageableExecutionUtils.getPage(growthRateList,pageable,() -> {return 100;});
+
+        List<Double> list = page.get().collect(Collectors.toList());
+        List<Double> tmplist = new ArrayList<>(list);
+
+        Collections.sort(list,Collections.reverseOrder());
+
+        assertThat(page.getTotalElements()).isEqualTo(100);
+        assertThat(page.getTotalPages()).isEqualTo(5);
+        assertThat(page.getSize()).isEqualTo(20);
+        assertThat(tmplist).isEqualTo(list);
+    }
+
+    @Test
+    public void selectStockInfo_findDetailBottomGrowThRate(){
+        List<StockInfo> stockInfoList = Optional.of(queryFactory.selectFrom(stockInfo).fetch()).orElse(List.of());
+        stockInfoList.forEach(StockInfo::updateCurrPrice);
+        Pageable pageable = PageRequest.of(0,20);
+        List<Double> growthRateList = Optional.ofNullable(queryFactory
+                        .select(Projections.fields(StockInfoRes.class,
+                                stockInfo.id
+                                , stockInfo.stockCode
+                                , stockInfo.stockName
+                                , stockInfo.startingPrice
+                                , stockInfo.currentPrice
+                                , stockInfo.hits
+                                , new CaseBuilder().when(stockInfo.buyingCount.lt(stockInfo.sellingCount)).then(stockInfo.buyingCount).otherwise(stockInfo.sellingCount).as("tradingVolume")
+                                , MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.currentPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00),2).as("growthRate")
+                        ))
+                        .from(stockInfo)
+                        .orderBy(MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.currentPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00),2).asc())
+                        .offset(pageable.getOffset())
+                        .limit(pageable.getPageSize())
+                        .fetch())
+                .orElse(List.of())
+                .stream()
+                .mapToDouble(StockInfoRes::getGrowthRate)
+                .boxed()
+                .collect(Collectors.toList());
+
+        Page<Double> page = PageableExecutionUtils.getPage(growthRateList,pageable,() -> {return 100;});
+
+        List<Double> list = page.get().collect(Collectors.toList());
+        List<Double> tmplist = new ArrayList<>(list);
+
+        Collections.sort(list,Collections.reverseOrder());
+
+        assertThat(page.getTotalElements()).isEqualTo(100);
+        assertThat(page.getTotalPages()).isEqualTo(5);
+        assertThat(page.getSize()).isEqualTo(20);
+        assertThat(tmplist).isEqualTo(list);
     }
 }
