@@ -8,12 +8,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 public class StockInfoController {
     private final StockInfoService stockInfoService;
+
     @GetMapping("stockInfos")
     public BaseDto<List<StockInfoRes>> getStockInfoList() {
         try {
@@ -26,11 +28,11 @@ public class StockInfoController {
                     .build();
         }
         catch(StockNoExistException e){
-            return Util.getErrorBody(e.getMessage());
+            return Util.getErrorBody(e.getMessage(), new ArrayList<StockInfoRes>());
         }
     }
     @GetMapping("reRanking")
-    public BaseDto reRanking() {
+    public BaseDto<Object> reRanking() {
         try{
             Long reRankCount = stockInfoService.reRanking();
 
@@ -40,7 +42,22 @@ public class StockInfoController {
                     .build();
         }
         catch(StockNoExistException e){
-            return Util.getErrorBody(e.getMessage());
+            return Util.getErrorBody(e.getMessage(), new Object());
+        }
+    }
+    @GetMapping("stockTopFiveAll")
+    public BaseDto<StockTopFiveAllRes<List<StockInfoRes>>> stockTopFiveAll() {
+        try{
+            StockTopFiveAllRes<List<StockInfoRes>> stockTopFiveAllRes = stockInfoService.stockTopFiveAll();
+
+            return BaseDto.<StockTopFiveAllRes<List<StockInfoRes>>>builder()
+                    .status(CUSTOM_CODE.RSEULT.SUCCESS.STATUS())
+                    .rsltMsg("")
+                    .rsltData(stockTopFiveAllRes)
+                    .build();
+        }
+        catch(StockNoExistException e){
+            return Util.getErrorBody(e.getMessage(), new StockTopFiveAllRes<List<StockInfoRes>>());
         }
     }
 }

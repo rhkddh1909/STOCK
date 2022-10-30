@@ -39,4 +39,12 @@ public class StockInfoService {
                 })
                 .sum();
     }
+
+    /**
+     * 많이 본, 많이 상승, 많이 하락, 많이 거래 된 4개의 분류의 tob5 조회
+     */
+    @Transactional(readOnly = true)
+    public StockTopFiveAllRes<List<StockInfoRes>> stockTopFiveAll(){
+        return stockInfoRepository.findTopFiveAll().orElseThrow(()->new StockNoExistException("cannot found StockInfo"));
+    }
 }

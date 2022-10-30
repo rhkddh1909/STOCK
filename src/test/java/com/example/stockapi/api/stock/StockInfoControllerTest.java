@@ -23,7 +23,7 @@ class StockInfoControllerTest {
     StockInfoController mockStockInfoController;
 
     @Test
-    public void getStockInfoList_ThenCallStockInfosMethod(){
+    public void getStockInfoList_thenCallStockInfosMethod(){
         //Stubbing (given)
         given(mockStockInfoService.stockInfos()).willReturn(List.of(new StockInfoRes(1L,"0001","주식명",100L,90L,0L,-10.0,0L)));
 
@@ -37,7 +37,7 @@ class StockInfoControllerTest {
     }
 
     @Test
-    public void reRanking_ThenCallReRankingMethod(){
+    public void reRanking_thenCallReRankingMethod(){
         //Stubbing (given)
         given(mockStockInfoService.reRanking()).willReturn(1L);
 
@@ -48,5 +48,19 @@ class StockInfoControllerTest {
         then(mockStockInfoService).should().reRanking();
 
         assertThat(reRanking.getStatus()).isEqualTo(CUSTOM_CODE.RSEULT.SUCCESS.STATUS());
+    }
+
+    @Test
+    public void selectStockTopFiveAll_thenCallSelectStockTopFiveAll(){
+        //Stubbing (given)
+        given(mockStockInfoService.stockTopFiveAll()).willReturn(new StockTopFiveAllRes<List<StockInfoRes>>());
+
+        //컨트롤러의 stockTopFiveAll 메서드를 실핼 할 때
+        BaseDto<StockTopFiveAllRes<List<StockInfoRes>>> testStockTopFiveAll = mockStockInfoController.stockTopFiveAll();
+
+        //Servic에서 stockTopFiveAll() 함수가 호출되었는지 검증
+        then(mockStockInfoService).should().stockTopFiveAll();
+
+        assertThat(testStockTopFiveAll.getStatus()).isEqualTo(CUSTOM_CODE.RSEULT.SUCCESS.STATUS());
     }
 }

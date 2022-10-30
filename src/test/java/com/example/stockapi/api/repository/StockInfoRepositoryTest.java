@@ -1,6 +1,8 @@
 package com.example.stockapi.api.repository;
 
 import com.example.stockapi.api.repository.domain.StockInfo;
+import com.example.stockapi.api.stock.StockInfoRes;
+import com.example.stockapi.api.stock.StockTopFiveAllRes;
 import com.example.stockapi.api.util.Util;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +22,7 @@ class StockInfoRepositoryTest {
     private StockInfoRepository testStockInfoRepository;
 
     @Test
-    public void selectStockALlInfoTest(){
+    public void selectStockInfo_findAllTest(){
         List<StockInfo> stockInfoList = testStockInfoRepository.findAll().orElse(List.of());
         assertThat(stockInfoList).isNotEmpty();
     }
@@ -63,6 +65,54 @@ class StockInfoRepositoryTest {
             assertThat(stockInfoAfterList.get(item).getBuyingCount()).isBetween(checkGrowthRateList.get(item)/10,checkGrowthRateList.get(item)*5);
             assertThat(stockInfoAfterList.get(item).getSellingCount()).isBetween(checkGrowthRateList.get(item)/10,checkGrowthRateList.get(item)*5);
         });
+    }
 
+    @Test
+    public void selectStockInfo_findHitsTopFiveTest(){
+        List<StockInfo> stockInfoList = testStockInfoRepository.findHitsTopFive().orElse(List.of());
+
+        assertThat(stockInfoList).isNotEmpty();
+        assertThat(stockInfoList.size()).isEqualTo(5);
+    }
+
+    @Test
+    public void selectStockInfo_findTradingVolumeTopFiveTest(){
+        List<StockInfoRes> stockInfoResList = testStockInfoRepository.findTradingVolumeTopFive().orElse(List.of());
+
+        assertThat(stockInfoResList).isNotEmpty();
+        assertThat(stockInfoResList.size()).isEqualTo(5);
+    }
+
+    @Test
+    public void selectStockInfo_findGrowthRateTopFiveTest(){
+        List<StockInfoRes> stockInfoResList = testStockInfoRepository.findGrowthRateTopFive().orElse(List.of());
+
+        assertThat(stockInfoResList).isNotEmpty();
+        assertThat(stockInfoResList.size()).isEqualTo(5);
+    }
+
+    @Test
+    public void selectStockInfo_findGrowthRateBottomFiveTest(){
+        List<StockInfoRes> stockInfoResList = testStockInfoRepository.findGrowthRateBottomFive().orElse(List.of());
+
+        assertThat(stockInfoResList).isNotEmpty();
+        assertThat(stockInfoResList.size()).isEqualTo(5);
+    }
+
+    @Test
+    public void selectStockInfo_findTopFiveAllTest(){
+        StockTopFiveAllRes<List<StockInfoRes>> stockTopFiveAllRes = testStockInfoRepository.findTopFiveAll().orElse(new StockTopFiveAllRes<List<StockInfoRes>>());
+
+        assertThat(stockTopFiveAllRes.getStockTopFiveHits()).isNotEmpty();
+        assertThat(stockTopFiveAllRes.getStockTopFiveHits().size()).isEqualTo(5);
+
+        assertThat(stockTopFiveAllRes.getStockTopFiveTradingVolume()).isNotEmpty();
+        assertThat(stockTopFiveAllRes.getStockTopFiveTradingVolume().size()).isEqualTo(5);
+
+        assertThat(stockTopFiveAllRes.getStockTopFiveGrowthRate()).isNotEmpty();
+        assertThat(stockTopFiveAllRes.getStockTopFiveGrowthRate().size()).isEqualTo(5);
+
+        assertThat(stockTopFiveAllRes.getStockBottomFiveGrowthRate()).isNotEmpty();
+        assertThat(stockTopFiveAllRes.getStockBottomFiveGrowthRate().size()).isEqualTo(5);
     }
 }

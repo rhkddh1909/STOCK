@@ -23,7 +23,7 @@ class StockInfoServiceTest {
     StockInfoService mockStockInfoService;
 
     @Test
-    public void stockInfo_ThenCallFindAllMethod(){
+    public void stockInfos_ThenCallFindAllMethod(){
         //Stubbing Mock(given)
         given(mockStockInfoRepository.findAll()).willReturn(Optional.of(List.of(new StockInfo(1L,"0001","주식명",100L,90L,0L,0L,0L))));
 
@@ -37,7 +37,7 @@ class StockInfoServiceTest {
     }
 
     @Test
-    public void stockInfo_ThenCallfindAllMethodAndReRanking(){
+    public void reRanking_ThenCallfindAllMethodAndStockInfos(){
         //Stubbing Mock(given)
         given(mockStockInfoRepository.findAll()).willReturn(Optional.of(List.of(new StockInfo(1L,"0001","주식명",100L,90L,0L,0L,0L))));
 
@@ -55,5 +55,33 @@ class StockInfoServiceTest {
         assertThat(stockInfoRes.get(0).getTradingVolume()).isNotEqualTo(0L);
         assertThat(stockInfoRes.get(0).getCurrentPrice()).isNotEqualTo(90L);
         assertThat(stockInfoRes.get(0).getGrowthRate()).isNotEqualTo(-10.0);
+    }
+
+    @Test
+    public void stockTopFiveAll_ThenCallFindTopFiveAllMethod(){
+        //Stubbing (given)
+        StockTopFiveAllRes<List<StockInfoRes>> stockTopFiveAllRes = new StockTopFiveAllRes<List<StockInfoRes>>();
+
+        stockTopFiveAllRes.setStockBottomFiveGrowthRate(List.of(new StockInfoRes(),new StockInfoRes(),new StockInfoRes(),new StockInfoRes(),new StockInfoRes()));
+        stockTopFiveAllRes.setStockTopFiveHits(List.of(new StockInfoRes(),new StockInfoRes(),new StockInfoRes(),new StockInfoRes(),new StockInfoRes()));
+        stockTopFiveAllRes.setStockTopFiveGrowthRate(List.of(new StockInfoRes(),new StockInfoRes(),new StockInfoRes(),new StockInfoRes(),new StockInfoRes()));
+        stockTopFiveAllRes.setStockTopFiveTradingVolume(List.of(new StockInfoRes(),new StockInfoRes(),new StockInfoRes(),new StockInfoRes(),new StockInfoRes()));
+
+        given(mockStockInfoRepository.findTopFiveAll()).willReturn(Optional.ofNullable(stockTopFiveAllRes));
+
+        //mockStockInfoService가 selectListStockTopFiveAllRes 호출 할때 (when)
+        StockTopFiveAllRes<List<StockInfoRes>> testStockTopFiveAllRes = mockStockInfoService.stockTopFiveAll();
+
+        //findTopFiveAll() 메서드가 호출되었는지 검증
+        then(mockStockInfoRepository).should().findTopFiveAll();
+
+        int objectSize = 0;
+        objectSize += testStockTopFiveAllRes.getStockTopFiveHits().size();
+        objectSize += testStockTopFiveAllRes.getStockTopFiveGrowthRate().size();
+        objectSize += testStockTopFiveAllRes.getStockTopFiveTradingVolume().size();
+        objectSize += testStockTopFiveAllRes.getStockBottomFiveGrowthRate().size();
+
+        //4개의 분류에 5개씩 데이터 = 20
+        assertThat(objectSize).isEqualTo(20);
     }
 }

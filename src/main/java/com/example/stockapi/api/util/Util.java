@@ -1,5 +1,6 @@
 package com.example.stockapi.api.util;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,11 +30,13 @@ public class Util {
         return 0L;
     };
 
-    public static BaseDto getErrorBody(String Message){
-        return BaseDto.builder()
+    public static <T> BaseDto<T> getErrorBody(String Message, T t){
+        ObjectMapper mapper = new ObjectMapper();
+        return BaseDto.<T>builder()
                 .status(CUSTOM_CODE.RSEULT.ERROR.STATUS())
                 .rsltMsg(Message)
                 .build();
+
     }
 
     /**

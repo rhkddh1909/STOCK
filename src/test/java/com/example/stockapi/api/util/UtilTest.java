@@ -9,7 +9,7 @@ class UtilTest {
     @Test
     public void util_getErrorBodyTest(){
         String message = "test";
-        BaseDto errorDto = Util.getErrorBody(message);
+        BaseDto errorDto = Util.getErrorBody(message, new Object());
 
         assertThat(errorDto.getStatus()).isEqualTo(CUSTOM_CODE.RSEULT.ERROR.STATUS());
         assertThat(errorDto.getRsltMsg()).isEqualTo(message);
