@@ -1,6 +1,5 @@
 package com.example.stockapi.api.repository;
 
-import com.example.stockapi.api.exception.QueryNoExistException;
 import com.example.stockapi.api.repository.domain.StockInfo;
 import com.example.stockapi.api.stock.StockInfoRes;
 import com.example.stockapi.api.stock.StockTopFiveAllRes;
@@ -210,7 +209,7 @@ class StockInfoRepositoryTest {
                 .fetch()
                 .stream()
                 .map(StockInfo::getStockInfoRes)
-                .toList()).orElseThrow(()->new QueryNoExistException("cannot found HitsBottomFive in query")));
+                .toList()).orElse(List.of()));
 
         queryResult.setStockTopFiveTradingVolume(Optional.ofNullable(queryFactory
                 .select(Projections.fields(StockInfoRes.class,
@@ -225,7 +224,7 @@ class StockInfoRepositoryTest {
                 .from(stockInfo)
                 .orderBy(new CaseBuilder().when(stockInfo.buyingCount.lt(stockInfo.sellingCount)).then(stockInfo.buyingCount).otherwise(stockInfo.sellingCount).desc())
                 .limit(5)
-                .fetch()).orElseThrow(()->new QueryNoExistException("cannot found TradingVolumeTopFive in query")));
+                .fetch()).orElse(List.of()));
 
         queryResult.setStockTopFiveGrowthRate(Optional.ofNullable(queryFactory
                 .select(Projections.fields(StockInfoRes.class,
@@ -240,7 +239,7 @@ class StockInfoRepositoryTest {
                 .from(stockInfo)
                 .orderBy(MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.currentPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00), 2).desc())
                 .limit(5)
-                .fetch()).orElseThrow(()->new QueryNoExistException("cannot found GrowthRateTopFive in query")));
+                .fetch()).orElse(List.of()));
 
         queryResult.setStockBottomFiveGrowthRate(Optional.ofNullable(queryFactory
                 .select(Projections.fields(StockInfoRes.class,
@@ -255,7 +254,7 @@ class StockInfoRepositoryTest {
                 .from(stockInfo)
                 .orderBy(MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.currentPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00), 2).asc())
                 .limit(5)
-                .fetch()).orElseThrow(()->new QueryNoExistException("cannot found GrowthRateBottomFive in query")));
+                .fetch()).orElse(List.of()));
 
         assertThat(queryResult.getStockTopFiveHits()).isNotEmpty();
         assertThat(queryResult.getStockTopFiveHits().size()).isEqualTo(5);

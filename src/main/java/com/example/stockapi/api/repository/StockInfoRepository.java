@@ -1,6 +1,5 @@
 package com.example.stockapi.api.repository;
 
-import com.example.stockapi.api.exception.QueryNoExistException;
 import com.example.stockapi.api.exception.StockNoExistException;
 import com.example.stockapi.api.repository.domain.StockInfo;
 import com.example.stockapi.api.stock.StockInfoRes;
@@ -99,7 +98,7 @@ public class StockInfoRepository{
                 .fetch()
                 .stream()
                 .map(StockInfo::getStockInfoRes)
-                .toList()).orElseThrow(()->new QueryNoExistException("cannot found HitsBottomFive in query")));
+                .toList()).orElse(List.of()));
 
         queryResult.setStockTopFiveTradingVolume(Optional.ofNullable(queryFactory
                 .select(Projections.fields(StockInfoRes.class,
@@ -114,7 +113,7 @@ public class StockInfoRepository{
                 .from(stockInfo)
                 .orderBy(new CaseBuilder().when(stockInfo.buyingCount.lt(stockInfo.sellingCount)).then(stockInfo.buyingCount).otherwise(stockInfo.sellingCount).desc())
                 .limit(5)
-                .fetch()).orElseThrow(()->new QueryNoExistException("cannot found TradingVolumeTopFive in query")));
+                .fetch()).orElse(List.of()));
 
         queryResult.setStockTopFiveGrowthRate(Optional.ofNullable(queryFactory
                 .select(Projections.fields(StockInfoRes.class,
@@ -129,7 +128,7 @@ public class StockInfoRepository{
                 .from(stockInfo)
                 .orderBy(MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.startingPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00), 2).desc())
                 .limit(5)
-                .fetch()).orElseThrow(()->new QueryNoExistException("cannot found GrowthRateTopFive in query")));
+                .fetch()).orElse(List.of()));
 
         queryResult.setStockBottomFiveGrowthRate(Optional.ofNullable(queryFactory
                 .select(Projections.fields(StockInfoRes.class,
@@ -144,7 +143,7 @@ public class StockInfoRepository{
                 .from(stockInfo)
                 .orderBy(MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.startingPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00), 2).asc())
                 .limit(5)
-                .fetch()).orElseThrow(()->new QueryNoExistException("cannot found GrowthRateBottomFive in query")));
+                .fetch()).orElse(List.of()));
 
         return Optional.of(queryResult);
     }
@@ -159,7 +158,7 @@ public class StockInfoRepository{
                 .stream()
                 .map(StockInfo::getStockInfoRes)
                 .toList())
-                .orElseThrow(()->new QueryNoExistException("cannot found GrowthRateBottomFive in query"));
+                .orElse(List.of());
 
         return Optional.of(PageableExecutionUtils.getPage(hitsListDetail,pageable,() -> {return 100;}).get().collect(Collectors.toList())).orElseThrow(()->new StockNoExistException("connot found StockInfos"));
     }
@@ -180,7 +179,7 @@ public class StockInfoRepository{
                         .offset(pageable.getOffset())
                         .limit(pageable.getPageSize())
                         .fetch())
-                .orElseThrow(()->new QueryNoExistException("cannot found GrowthRateBottomFive in query"));
+                .orElse(List.of());
 
         return Optional.of(PageableExecutionUtils.getPage(tradingVolumeListDetail,pageable,() -> {return 100;}).get().collect(Collectors.toList())).orElseThrow(()->new StockNoExistException("connot found StockInfos"));
     }
@@ -201,7 +200,7 @@ public class StockInfoRepository{
                         .offset(pageable.getOffset())
                         .limit(pageable.getPageSize())
                         .fetch())
-                .orElseThrow(()->new QueryNoExistException("cannot found GrowthRateBottomFive in query"));
+                .orElse(List.of());
 
         return Optional.of(PageableExecutionUtils.getPage(growthRateList,pageable,() -> {return 100;}).get().collect(Collectors.toList())).orElseThrow(()->new StockNoExistException("connot found StockInfos"));
     }
@@ -222,7 +221,7 @@ public class StockInfoRepository{
                         .offset(pageable.getOffset())
                         .limit(pageable.getPageSize())
                         .fetch())
-                .orElseThrow(()->new QueryNoExistException("cannot found GrowthRateBottomFive in query"));
+                .orElse(List.of());
 
         return Optional.of(PageableExecutionUtils.getPage(growthRateList,pageable,() -> {return 100;}).get().collect(Collectors.toList())).orElseThrow(()->new StockNoExistException("connot found StockInfos"));
     }

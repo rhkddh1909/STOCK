@@ -1,6 +1,5 @@
 package com.example.stockapi.api.stock;
 
-import com.example.stockapi.api.repository.domain.StockInfo;
 import com.example.stockapi.api.util.BaseDto;
 import com.example.stockapi.api.util.CUSTOM_CODE;
 import org.junit.jupiter.api.Test;
