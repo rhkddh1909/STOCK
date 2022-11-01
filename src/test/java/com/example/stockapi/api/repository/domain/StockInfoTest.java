@@ -26,44 +26,41 @@ class StockInfoTest {
     @Test
     public void stockInfo_updateHitsTest(){
         StockInfo stockInfoTest = new StockInfo("0001","주식명",100L,90L,10L,20L,0L);
-        stockInfoTest.updateHits();
-        assertThat(stockInfoTest.getHits()).isBetween(50L,500L);
+        Long tmpLong = stockInfoTest.updateHits();
+        assertThat(tmpLong).isBetween(50L,500L);
     }
 
     @Test
     public void stockInfo_updateCurrentPriceTest(){
         StockInfo stockInfoTest = new StockInfo("0001","주식명",100L,90L,10L,20L,0L);
-        for(int i = 0; i < 100; i++) {
-            Long currentPrice = stockInfoTest.getCurrentPrice();
-            Long hits = stockInfoTest.getHits();
-            Long buyingCount = stockInfoTest.getBuyingCount();
-            Long sellingCount = stockInfoTest.getSellingCount();
-            Long checkCount = Util.checkGrowthRate.apply(Math.abs(Util.getGrowthRate(stockInfoTest.getStartingPrice(),stockInfoTest.getCurrentPrice())));
 
-            stockInfoTest.updateCurrPrice();
+        Long currentPrice = stockInfoTest.updateCurrPrice();
 
-            assertThat(Util.getGrowthRate(stockInfoTest.getStartingPrice(),stockInfoTest.getCurrentPrice())).isBetween(-30.0,30.0);
-            assertThat(stockInfoTest.getHits()).isBetween(hits+(checkCount/10L),hits+checkCount);
-            if(stockInfoTest.getBuyingCount() != buyingCount) {
-                assertThat(stockInfoTest.getCurrentPrice()).isBetween((currentPrice + Util.checkPrice.apply(currentPrice) * -5), (currentPrice + Util.checkPrice.apply(currentPrice) * 5));
-                assertThat(stockInfoTest.getBuyingCount()).isBetween(buyingCount + (checkCount / 10L), buyingCount + (checkCount * 5));
-                assertThat(stockInfoTest.getSellingCount()).isBetween(sellingCount + (checkCount / 10L), sellingCount + (checkCount * 5));
-            }
-            else{
-                assertThat(stockInfoTest.getCurrentPrice()).isEqualTo(currentPrice);
-                assertThat(stockInfoTest.getBuyingCount()).isEqualTo(buyingCount);
-                assertThat(stockInfoTest.getSellingCount()).isEqualTo(sellingCount);
-            }
-        }
+        assertThat(currentPrice).isBetween(90L+Util.checkPrice.apply(90L)*-5,90L+Util.checkPrice.apply(90L)*5);
     }
 
     @Test
     public void stockInfo_updateBuyingSellingCount(){
         StockInfo stockInfoTest = new StockInfo("0001","주식명",100L,90L,10L,20L,0L);
-        stockInfoTest.updateBuyingCount();
-        stockInfoTest.updateSellingCount();
+        Long buyingCount = stockInfoTest.updateBuyingCount();
+        Long sellingCount = stockInfoTest.updateSellingCount();
 
-        assertThat(stockInfoTest.getBuyingCount()).isBetween(50L,2500L);
-        assertThat(stockInfoTest.getSellingCount()).isBetween(50L,2500L);
+        assertThat(buyingCount).isBetween(50L,2500L);
+        assertThat(sellingCount).isBetween(50L,2500L);
+    }
+
+    @Test
+    public void stockInfo_reRanking(){
+        StockInfo stockInfoTest = new StockInfo("0001","주식명",100L,90L,10L,20L,0L);
+        stockInfoTest.reRanking();
+
+        assertThat(stockInfoTest.getStockCode()).isEqualTo(stockInfoTest.getStockCode());
+        assertThat(stockInfoTest.getHits()).isBetween(10L,1000L);
+
+        Long price = stockInfoTest.getCurrentPrice();
+        Double growthRate = Math.abs(Util.getGrowthRate(100L,90L));
+        assertThat(stockInfoTest.getCurrentPrice()).isBetween(price+Util.checkPrice.apply(price)*-5,price+Util.checkPrice.apply(price)*5);
+        assertThat(stockInfoTest.getBuyingCount()).isBetween(0L+(Util.checkGrowthRate.apply(growthRate)/10L),0L+Util.checkGrowthRate.apply(growthRate)*5);
+        assertThat(stockInfoTest.getSellingCount()).isBetween(0L+(Util.checkGrowthRate.apply(growthRate)/10L),0L+Util.checkGrowthRate.apply(growthRate)*5);
     }
 }

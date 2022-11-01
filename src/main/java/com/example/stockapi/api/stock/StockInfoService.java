@@ -33,12 +33,7 @@ public class StockInfoService {
     public long reRanking() {
         return stockInfoRepository.findAll().orElseThrow(()-> new StockNoExistException("cannot found stocks"))
                 .stream()
-                .toList()
-                .stream()
-                .mapToLong(item->{
-                    item.updateCurrPrice();
-                    return 1L;
-                })
+                .mapToLong(StockInfo::reRanking)
                 .sum();
     }
 
@@ -49,22 +44,25 @@ public class StockInfoService {
     public StockTopFiveAllRes<List<StockInfoRes>> stockTopFiveAll(){
         return stockInfoRepository.findTopFiveAll().orElseThrow(()->new StockNoExistException("cannot found StockInfo"));
     }
-
+    @Transactional(readOnly = true)
     public List<StockInfoRes> stockDetailTopHits(int offset, int limit) {
         Pageable pageable = PageRequest.of(offset,limit);
         return stockInfoRepository.findDetailTopHits(pageable);
     }
 
+    @Transactional(readOnly = true)
     public List<StockInfoRes> stockDetailTopTradingVolume(int offset, int limit) {
         Pageable pageable = PageRequest.of(offset,limit);
         return stockInfoRepository.findDetailTopTradingVolume(pageable);
     }
 
+    @Transactional(readOnly = true)
     public List<StockInfoRes> stockDetailTopGrowthRate(int offset, int limit) {
         Pageable pageable = PageRequest.of(offset,limit);
         return stockInfoRepository.findDetailTopGrowthRate(pageable);
     }
 
+    @Transactional(readOnly = true)
     public List<StockInfoRes> stockDetailBottomGrowthRate(int offset, int limit) {
         Pageable pageable = PageRequest.of(offset,limit);
         return stockInfoRepository.findDetailBottomGrowthRate(pageable);

@@ -6,10 +6,7 @@ import lombok.Getter;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import java.util.concurrent.ThreadLocalRandom;
 
 @Entity
 @Getter
@@ -54,28 +51,39 @@ public class StockInfo {
     /**
      * 조회수 업데이트
      * */
-    public void updateHits() {
-        this.hits = hits + Util.getHitsCount(startingPrice,currentPrice);
+    public long updateHits() {
+        return hits + Util.getHitsCount(startingPrice,currentPrice);
     }
 
     /**
      * 현재가 업데이트
      * */
-    public void updateCurrPrice(){
-        Long newPrice = currentPrice + Util.getAskingPrice(currentPrice);
-        Double growthRate = Util.getGrowthRate(startingPrice,newPrice);
-        updateHits();
-        if(Math.abs(growthRate) <= 30.0){
-            updateBuyingCount();
-            updateSellingCount();
-            this.currentPrice = newPrice;
-        }
+    public Long updateCurrPrice(){
+        return currentPrice + Util.getAskingPrice(currentPrice);
     }
 
-    public void updateBuyingCount() {
-        this.buyingCount = buyingCount+Util.getBuyingSellingCount(startingPrice,currentPrice);
+    /**
+     * 매수 업데이트
+     * */
+    public Long updateBuyingCount() {
+        return buyingCount+Util.getBuyingSellingCount(startingPrice,currentPrice);
     }
-    public void updateSellingCount() {
-        this.sellingCount = sellingCount+Util.getBuyingSellingCount(startingPrice,currentPrice);
+
+    /**
+     * 매도 업데이트
+     * */
+    public Long updateSellingCount() {
+        return sellingCount+Util.getBuyingSellingCount(startingPrice,currentPrice);
+    }
+
+    public Long reRanking() {
+        Long newPrice = updateCurrPrice();
+        Double growthRate = Math.abs(Util.getGrowthRate(startingPrice,newPrice));
+        this.hits = updateHits();
+        this.currentPrice = growthRate <= 30.0 ? newPrice : currentPrice;
+        this.buyingCount = growthRate <= 30.0 ? updateBuyingCount() : buyingCount;
+        this.sellingCount = growthRate <= 30.0 ? updateSellingCount() : sellingCount;
+
+        return 1L;
     }
 }

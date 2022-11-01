@@ -52,7 +52,7 @@ class StockInfoRepositoryTest {
                 .fetch())
                 .orElse(List.of())
                 .stream()
-                .forEach(item->item.updateHits());
+                .forEach(item->item.reRanking());
         Optional.of(queryFactory
                 .selectFrom(stockInfo)
                 .fetch())
@@ -63,7 +63,7 @@ class StockInfoRepositoryTest {
 
     @Test
     @Transactional
-    public void updateStockInfo_currentPriceTest(){
+    public void updateStockInfo_reRankingTest(){
         List<StockInfo> stockInfoList = Optional.of(queryFactory.selectFrom(stockInfo).fetch()).orElse(List.of());
         List<Long> askingPriceList = stockInfoList.stream()
                 .map(item-> checkPrice.apply(item.getCurrentPrice()))
@@ -72,7 +72,7 @@ class StockInfoRepositoryTest {
                 .boxed()
                 .toList();
 
-        stockInfoList.forEach(StockInfo::updateCurrPrice);
+        stockInfoList.forEach(StockInfo::reRanking);
 
         List<StockInfo> stockInfoAfterList = Optional.of(queryFactory.selectFrom(stockInfo).fetch()).orElse(List.of());
 
@@ -110,7 +110,7 @@ class StockInfoRepositoryTest {
     @Test
     public void selectStockInfo_findTradingVolumeTopFiveTest(){
         List<StockInfo> stockInfoList = Optional.of(queryFactory.selectFrom(stockInfo).fetch()).orElse(List.of());
-        stockInfoList.forEach(StockInfo::updateCurrPrice);
+        stockInfoList.forEach(StockInfo::reRanking);
         List<Long> tradingVolumeList = Optional.ofNullable(queryFactory
                 .select(Projections.fields(StockInfoRes.class,
                         stockInfo.stockCode
@@ -141,7 +141,7 @@ class StockInfoRepositoryTest {
     @Test
     public void selectStockInfo_findGrowthRateTopFiveTest(){
         List<StockInfo> stockInfoList = Optional.of(queryFactory.selectFrom(stockInfo).fetch()).orElse(List.of());
-        stockInfoList.forEach(StockInfo::updateCurrPrice);
+        stockInfoList.forEach(StockInfo::reRanking);
         List<Double> growthRateList = Optional.ofNullable(queryFactory
                 .select(Projections.fields(StockInfoRes.class,
                         stockInfo.stockCode
@@ -172,7 +172,7 @@ class StockInfoRepositoryTest {
     @Test
     public void selectStockInfo_findGrowthRateBottomFiveTest(){
         List<StockInfo> stockInfoList = Optional.of(queryFactory.selectFrom(stockInfo).fetch()).orElse(List.of());
-        stockInfoList.forEach(StockInfo::updateCurrPrice);
+        stockInfoList.forEach(StockInfo::reRanking);
         List<Double> growthRateList = Optional.ofNullable(queryFactory
                         .select(Projections.fields(StockInfoRes.class,
                                 stockInfo.stockCode
@@ -201,6 +201,9 @@ class StockInfoRepositoryTest {
 
     @Test
     public void selectStockInfo_findTopFiveAllTest(){
+        List<StockInfo> stockInfoList = Optional.of(queryFactory.selectFrom(stockInfo).fetch()).orElse(List.of());
+        stockInfoList.forEach(StockInfo::reRanking);
+
         StockTopFiveAllRes<List<StockInfoRes>> queryResult = new StockTopFiveAllRes<List<StockInfoRes>>();
         queryResult.setStockTopFiveHits(Optional.of(queryFactory
                 .selectFrom(stockInfo)
@@ -272,7 +275,7 @@ class StockInfoRepositoryTest {
     @Test
     public void selectStockInfo_findDetailTopHits(){
         List<StockInfo> stockInfoList = Optional.of(queryFactory.selectFrom(stockInfo).fetch()).orElse(List.of());
-        stockInfoList.forEach(StockInfo::updateCurrPrice);
+        stockInfoList.forEach(StockInfo::reRanking);
         Pageable pageable = PageRequest.of(0,20);
         List<Long> hitsList = Optional.ofNullable(queryFactory
                         .selectFrom(stockInfo)
@@ -302,7 +305,7 @@ class StockInfoRepositoryTest {
     @Test
     public void selectStockInfo_findDetailTopTradingVolume(){
         List<StockInfo> stockInfoList = Optional.of(queryFactory.selectFrom(stockInfo).fetch()).orElse(List.of());
-        stockInfoList.forEach(StockInfo::updateCurrPrice);
+        stockInfoList.forEach(StockInfo::reRanking);
         Pageable pageable = PageRequest.of(0,20);
         List<Long> tradingVolumeList = Optional.ofNullable(queryFactory
                         .select(Projections.fields(StockInfoRes.class,
@@ -341,7 +344,7 @@ class StockInfoRepositoryTest {
     @Test
     public void selectStockInfo_findDetailTopGrowThRate(){
         List<StockInfo> stockInfoList = Optional.of(queryFactory.selectFrom(stockInfo).fetch()).orElse(List.of());
-        stockInfoList.forEach(StockInfo::updateCurrPrice);
+        stockInfoList.forEach(StockInfo::reRanking);
         Pageable pageable = PageRequest.of(0,20);
         List<Double> growthRateList = Optional.ofNullable(queryFactory
                         .select(Projections.fields(StockInfoRes.class,
@@ -380,7 +383,7 @@ class StockInfoRepositoryTest {
     @Test
     public void selectStockInfo_findDetailBottomGrowThRate(){
         List<StockInfo> stockInfoList = Optional.of(queryFactory.selectFrom(stockInfo).fetch()).orElse(List.of());
-        stockInfoList.forEach(StockInfo::updateCurrPrice);
+        stockInfoList.forEach(StockInfo::reRanking);
         Pageable pageable = PageRequest.of(0,20);
         List<Double> growthRateList = Optional.ofNullable(queryFactory
                         .select(Projections.fields(StockInfoRes.class,
@@ -415,4 +418,5 @@ class StockInfoRepositoryTest {
         assertThat(page.getSize()).isEqualTo(20);
         assertThat(tmplist).isEqualTo(list);
     }
+
 }
