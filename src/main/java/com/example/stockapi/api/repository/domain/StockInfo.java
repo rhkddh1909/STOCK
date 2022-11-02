@@ -12,15 +12,24 @@ import javax.persistence.Id;
 @Getter
 @DynamicUpdate
 public class StockInfo {
+    /**종목 코드**/
     @Id
     private String stockCode;
-    @Id
-    private String marketCode;
+    /**주식명**/
     private String stockName;
+    /**시장 코드**/
+    private String marketCode;
+    /**시장명**/
+    private String marketName;
+    /**시작가**/
     private Long startingPrice;
+    /**현재가**/
     private Long currentPrice;
+    /**매도량**/
     private Long sellingCount;
+    /**매수량**/
     private Long buyingCount;
+    /**조회수**/
     private Long hits;
     protected StockInfo() {}
 
@@ -40,8 +49,6 @@ public class StockInfo {
     public StockInfoRes getStockInfoRes() {
         return new StockInfoRes(stockCode, stockName, startingPrice, currentPrice, getTradingVolume(), Util.getGrowthRate(startingPrice,currentPrice), hits);
     }
-
-
 
     /**
      * 거래량
