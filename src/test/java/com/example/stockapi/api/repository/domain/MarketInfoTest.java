@@ -14,5 +14,10 @@ class MarketInfoTest {
 
         assertThat(marketInfo.getMarketOpenYn()).isEqualTo("Y");
         assertThat(marketInfo.getMarketSequence()).isEqualTo(1L);
+
+        marketInfo.updateMarketOpenYn("N");
+
+        assertThat(marketInfo.getMarketOpenYn()).isEqualTo("N");
+        assertThat(marketInfo.getMarketSequence()).isEqualTo(1L);
     }
 }

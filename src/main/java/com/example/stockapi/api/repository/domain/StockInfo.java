@@ -7,10 +7,13 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.Table;
 
 @Entity
 @Getter
 @DynamicUpdate
+@Table(indexes = @Index(name="i_marketCode", columnList = "marketCode"))
 public class StockInfo {
     /**종목 코드**/
     @Id
@@ -33,9 +36,11 @@ public class StockInfo {
     private Long hits;
     protected StockInfo() {}
 
-    public StockInfo(String stockCode, String stockName, Long startingPrice, Long currentPrice, Long sellingCount, Long buyingCount, Long hits) {
+    public StockInfo(String stockCode, String stockName, String marketCode, String marketName, Long startingPrice, Long currentPrice, Long sellingCount, Long buyingCount, Long hits) {
         this.stockCode = stockCode;
         this.stockName = stockName;
+        this.marketCode = marketCode;
+        this.marketName = marketName;
         this.startingPrice = startingPrice;
         this.currentPrice = currentPrice;
         this.sellingCount = sellingCount;
@@ -47,7 +52,7 @@ public class StockInfo {
      * 결과값
      * */
     public StockInfoRes getStockInfoRes() {
-        return new StockInfoRes(stockCode, stockName, startingPrice, currentPrice, getTradingVolume(), Util.getGrowthRate(startingPrice,currentPrice), hits);
+        return new StockInfoRes(stockCode, stockName, marketName, startingPrice, currentPrice, getTradingVolume(), Util.getGrowthRate(startingPrice,currentPrice), hits);
     }
 
     /**

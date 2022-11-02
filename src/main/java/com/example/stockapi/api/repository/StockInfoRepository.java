@@ -1,6 +1,6 @@
 package com.example.stockapi.api.repository;
 
-import com.example.stockapi.api.exception.StockNoExistException;
+import com.example.stockapi.api.exception.QueryNoExistException;
 import com.example.stockapi.api.repository.domain.StockInfo;
 import com.example.stockapi.api.stock.StockInfoRes;
 import com.example.stockapi.api.stock.StockTopFiveAllRes;
@@ -27,8 +27,8 @@ import static com.example.stockapi.api.repository.domain.QStockInfo.stockInfo;
 public class StockInfoRepository{
     private final JPAQueryFactory queryFactory;
 
-    private StringPath aliasTradingVolume = Expressions.stringPath("tradingVolume");
-    private StringPath aliasGrowthRate = Expressions.stringPath("growthRate");
+    private final StringPath aliasTradingVolume = Expressions.stringPath("tradingVolume");
+    private final StringPath aliasGrowthRate = Expressions.stringPath("growthRate");
 
     public Optional<List<StockInfo>> findAll(){
         return Optional.ofNullable(queryFactory
@@ -36,20 +36,20 @@ public class StockInfoRepository{
                 .fetch());
     }
 
-    public Optional<StockTopFiveAllRes<List<StockInfoRes>>> findTopFiveAll() {
+    public StockTopFiveAllRes<List<StockInfoRes>> findTopFiveAll() {
 
         StockTopFiveAllRes<List<StockInfoRes>> queryResult = new StockTopFiveAllRes<List<StockInfoRes>>();
         Pageable pageable = PageRequest.of(0,5);
 
-        queryResult.setStockTopFiveHits(findDetailTopHits(pageable));
-        queryResult.setStockTopFiveTradingVolume(findDetailTopTradingVolume(pageable));
-        queryResult.setStockTopFiveGrowthRate(findDetailTopGrowthRate(pageable));
-        queryResult.setStockBottomFiveGrowthRate(findDetailBottomGrowthRate(pageable));
+        queryResult.setStockTopFiveHits(findDetailTopHits(pageable).orElseThrow(()->new QueryNoExistException("cannot found StockInfo")));
+        queryResult.setStockTopFiveTradingVolume(findDetailTopTradingVolume(pageable).orElseThrow(()->new QueryNoExistException("cannot found StockInfo")));
+        queryResult.setStockTopFiveGrowthRate(findDetailTopGrowthRate(pageable).orElseThrow(()->new QueryNoExistException("cannot found StockInfo")));
+        queryResult.setStockBottomFiveGrowthRate(findDetailBottomGrowthRate(pageable).orElseThrow(()->new QueryNoExistException("cannot found StockInfo")));
 
-        return Optional.of(queryResult);
+        return queryResult;
     }
 
-    public List<StockInfoRes> findDetailTopHits(Pageable pageable) {
+    public Optional<List<StockInfoRes>> findDetailTopHits(Pageable pageable) {
         List<StockInfoRes> hitsListDetail = Optional.of(queryFactory
                         .selectFrom(stockInfo)
                         .orderBy(stockInfo.hits.desc())
@@ -61,14 +61,15 @@ public class StockInfoRepository{
                 .toList())
                 .orElse(List.of());
 
-        return Optional.of(PageableExecutionUtils.getPage(hitsListDetail,pageable,() -> {return 100;}).get().collect(Collectors.toList())).orElseThrow(()->new StockNoExistException("connot found StockInfos"));
+        return Optional.ofNullable(PageableExecutionUtils.getPage(hitsListDetail,pageable,() -> {return 100;}).get().collect(Collectors.toList()));
     }
 
-    public List<StockInfoRes> findDetailTopTradingVolume(Pageable pageable) {
+    public Optional<List<StockInfoRes>> findDetailTopTradingVolume(Pageable pageable) {
         List<StockInfoRes> tradingVolumeListDetail = Optional.ofNullable(queryFactory
                         .select(Projections.fields(StockInfoRes.class,
                                 stockInfo.stockCode
                                 , stockInfo.stockName
+                                , stockInfo.marketName
                                 , stockInfo.startingPrice
                                 , stockInfo.currentPrice
                                 , stockInfo.hits
@@ -88,14 +89,15 @@ public class StockInfoRepository{
                         .fetch())
                 .orElse(List.of());
 
-        return Optional.of(PageableExecutionUtils.getPage(tradingVolumeListDetail,pageable,() -> {return 100;}).get().collect(Collectors.toList())).orElseThrow(()->new StockNoExistException("connot found StockInfos"));
+        return Optional.of(PageableExecutionUtils.getPage(tradingVolumeListDetail,pageable,() -> {return 100;}).get().collect(Collectors.toList()));
     }
 
-    public List<StockInfoRes> findDetailTopGrowthRate(Pageable pageable) {
+    public Optional<List<StockInfoRes>> findDetailTopGrowthRate(Pageable pageable) {
         List<StockInfoRes> growthRateList = Optional.ofNullable(queryFactory
                         .select(Projections.fields(StockInfoRes.class,
                                 stockInfo.stockCode
                                 , stockInfo.stockName
+                                , stockInfo.marketName
                                 , stockInfo.startingPrice
                                 , stockInfo.currentPrice
                                 , stockInfo.hits
@@ -114,14 +116,15 @@ public class StockInfoRepository{
                         .fetch())
                 .orElse(List.of());
 
-        return Optional.of(PageableExecutionUtils.getPage(growthRateList,pageable,() -> {return 100;}).get().collect(Collectors.toList())).orElseThrow(()->new StockNoExistException("connot found StockInfos"));
+        return Optional.of(PageableExecutionUtils.getPage(growthRateList,pageable,() -> {return 100;}).get().collect(Collectors.toList()));
     }
 
-    public List<StockInfoRes> findDetailBottomGrowthRate(Pageable pageable) {
+    public Optional<List<StockInfoRes>> findDetailBottomGrowthRate(Pageable pageable) {
         List<StockInfoRes> growthRateList = Optional.ofNullable(queryFactory
                         .select(Projections.fields(StockInfoRes.class,
                                 stockInfo.stockCode
                                 , stockInfo.stockName
+                                , stockInfo.marketName
                                 , stockInfo.startingPrice
                                 , stockInfo.currentPrice
                                 , stockInfo.hits
@@ -140,6 +143,6 @@ public class StockInfoRepository{
                         .fetch())
                 .orElse(List.of());
 
-        return Optional.of(PageableExecutionUtils.getPage(growthRateList,pageable,() -> {return 100;}).get().collect(Collectors.toList())).orElseThrow(()->new StockNoExistException("connot found StockInfos"));
+        return Optional.of(PageableExecutionUtils.getPage(growthRateList,pageable,() -> {return 100;}).get().collect(Collectors.toList()));
     }
 }

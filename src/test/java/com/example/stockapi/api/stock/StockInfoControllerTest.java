@@ -26,7 +26,7 @@ class StockInfoControllerTest {
     @Test
     public void getStockInfoList_thenCallStockInfosMethod() {
         //Stubbing (given)
-        given(mockStockInfoService.stockInfos()).willReturn(List.of(new StockInfoRes("0001", "주식명", 100L, 90L, 0L, -10.0, 0L)));
+        given(mockStockInfoService.stockInfos()).willReturn(List.of(new StockInfoRes("0001", "주식명", "시장명", 100L, 90L, 0L, -10.0, 0L)));
 
         //mockStockInfoController에서 getStockInfoList()를 실행할때 (when)
         BaseDto<List<StockInfoRes>> stockInfos = mockStockInfoController.getStockInfoList();
@@ -34,7 +34,7 @@ class StockInfoControllerTest {
         //stockInfos()를 탔는지 검증한다.(then)
         then(mockStockInfoService).should().stockInfos();
 
-        assertThat(stockInfos.getRsltData().get(0)).isEqualTo(new StockInfoRes("0001", "주식명", 100L, 90L, 0L, -10.0, 0L));
+        assertThat(stockInfos.getRsltData().get(0)).isEqualTo(new StockInfoRes("0001", "주식명", "시장명", 100L, 90L, 0L, -10.0, 0L));
     }
 
     @Test

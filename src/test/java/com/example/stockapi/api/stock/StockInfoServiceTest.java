@@ -29,7 +29,7 @@ class StockInfoServiceTest {
     @Test
     public void stockInfos_ThenCallFindAllMethod(){
         //Stubbing Mock(given)
-        given(mockStockInfoRepository.findAll()).willReturn(Optional.of(List.of(new StockInfo("0001","주식명",100L,90L,0L,0L,0L))));
+        given(mockStockInfoRepository.findAll()).willReturn(Optional.of(List.of(new StockInfo("0001","주식명", "시장코드", "시장명",100L,90L,0L,0L,0L))));
 
         //mockStockInfoService가 StockInfos를 호출 할때 (when)
         List<StockInfoRes> stockInfoRes = mockStockInfoService.stockInfos();
@@ -37,13 +37,13 @@ class StockInfoServiceTest {
         //findAll함수가 호출 되었는지 검증한다.(then)
         then(mockStockInfoRepository).should().findAll();
 
-        assertThat(stockInfoRes.get(0)).isEqualTo(new StockInfoRes("0001","주식명",100L,90L,0L,-10.0,0L));
+        assertThat(stockInfoRes.get(0)).isEqualTo(new StockInfoRes("0001","주식명", "시장명",100L,90L,0L,-10.0,0L));
     }
 
     @Test
     public void reRanking_ThenCallfindAllMethodAndStockInfos(){
         //Stubbing Mock(given)
-        given(mockStockInfoRepository.findAll()).willReturn(Optional.of(List.of(new StockInfo("0001","주식명",100L,90L,0L,0L,0L))));
+        given(mockStockInfoRepository.findAll()).willReturn(Optional.of(List.of(new StockInfo("0001","주식명", "시장명", "시장명",100L,90L,0L,0L,0L))));
 
         //mockStockInfoService가 reRanking 호출 할때 (when)
         Long reRankingCount = mockStockInfoService.reRanking();
@@ -71,7 +71,7 @@ class StockInfoServiceTest {
         stockTopFiveAllRes.setStockTopFiveGrowthRate(List.of(new StockInfoRes(),new StockInfoRes(),new StockInfoRes(),new StockInfoRes(),new StockInfoRes()));
         stockTopFiveAllRes.setStockTopFiveTradingVolume(List.of(new StockInfoRes(),new StockInfoRes(),new StockInfoRes(),new StockInfoRes(),new StockInfoRes()));
 
-        given(mockStockInfoRepository.findTopFiveAll()).willReturn(Optional.ofNullable(stockTopFiveAllRes));
+        given(mockStockInfoRepository.findTopFiveAll()).willReturn(stockTopFiveAllRes);
 
         //mockStockInfoService가 selectListStockTopFiveAllRes 호출 할때 (when)
         StockTopFiveAllRes<List<StockInfoRes>> testStockTopFiveAllRes = mockStockInfoService.stockTopFiveAll();
@@ -92,10 +92,10 @@ class StockInfoServiceTest {
     @Test
     public void stockDetailTopHits_ThenCallFindDetailTopHitsMethod(){
         //Stubbing (given)
-        List<StockInfoRes> stockDetailTopHits = new ArrayList<StockInfoRes>();
+        Optional<List<StockInfoRes>> stockDetailTopHits = Optional.of(new ArrayList<StockInfoRes>());
 
         for(int i = 0; i < 20; i++){
-            stockDetailTopHits.add(new StockInfoRes());
+            stockDetailTopHits.get().add(new StockInfoRes());
         }
         given(mockStockInfoRepository.findDetailTopHits(any())).willReturn(stockDetailTopHits);
 
@@ -111,10 +111,10 @@ class StockInfoServiceTest {
     @Test
     public void stockDetailTopTradingVolume_ThenCallFindDetailTopTradingVolumeMethod(){
         //Stubbing (given)
-        List<StockInfoRes> stockTopFiveAllRes = new ArrayList<StockInfoRes>();
+        Optional<List<StockInfoRes>> stockTopFiveAllRes = Optional.of(new ArrayList<StockInfoRes>());
 
         for(int i = 0; i < 20; i++){
-            stockTopFiveAllRes.add(new StockInfoRes());
+            stockTopFiveAllRes.get().add(new StockInfoRes());
         }
         given(mockStockInfoRepository.findDetailTopTradingVolume(any())).willReturn(stockTopFiveAllRes);
 
@@ -131,10 +131,10 @@ class StockInfoServiceTest {
     @Test
     public void stockDetailTopGrowthRate_ThenCallFindDetailTopGrowthRateMethod(){
         //Stubbing (given)
-        List<StockInfoRes> stockTopFiveAllRes = new ArrayList<StockInfoRes>();
+        Optional<List<StockInfoRes>> stockTopFiveAllRes = Optional.of(new ArrayList<StockInfoRes>());
 
         for(int i = 0; i < 20; i++){
-            stockTopFiveAllRes.add(new StockInfoRes());
+            stockTopFiveAllRes.get().add(new StockInfoRes());
         }
         given(mockStockInfoRepository.findDetailTopGrowthRate(any())).willReturn(stockTopFiveAllRes);
 
@@ -151,13 +151,11 @@ class StockInfoServiceTest {
     @Test
     public void stockDetailTopBottomGrowthRate_ThenCallFindDetailBottomGrowthRateMethod(){
         //Stubbing (given)
-        List<StockInfoRes> stockDetailTopBottomGrowthRate = new ArrayList<StockInfoRes>();
+        Optional<List<StockInfoRes>> stockDetailTopBottomGrowthRate = Optional.of(new ArrayList<StockInfoRes>());
 
         for(int i = 0; i < 20; i++){
-            stockDetailTopBottomGrowthRate.add(new StockInfoRes());
+            stockDetailTopBottomGrowthRate.get().add(new StockInfoRes());
         }
-
-        System.out.println(stockDetailTopBottomGrowthRate.size());
 
         given(mockStockInfoRepository.findDetailBottomGrowthRate(any())).willReturn(stockDetailTopBottomGrowthRate);
 

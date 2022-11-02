@@ -5,7 +5,6 @@ import com.example.stockapi.api.stock.StockInfoRes;
 import com.example.stockapi.api.stock.StockTopFiveAllRes;
 import com.example.stockapi.api.util.Util;
 import com.example.stockapi.config.QuerydslTestConfiguration;
-import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;
@@ -22,6 +21,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.test.context.ActiveProfiles;
+
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
 import static com.example.stockapi.api.repository.domain.QStockInfo.stockInfo;
 import static com.example.stockapi.api.util.Util.*;
 import static org.assertj.core.api.Assertions.assertThat;

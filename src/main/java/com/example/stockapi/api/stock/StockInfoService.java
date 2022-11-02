@@ -1,6 +1,6 @@
 package com.example.stockapi.api.stock;
 
-import com.example.stockapi.api.exception.StockNoExistException;
+import com.example.stockapi.api.exception.QueryNoExistException;
 import com.example.stockapi.api.repository.StockInfoRepository;
 import com.example.stockapi.api.repository.domain.StockInfo;
 import lombok.RequiredArgsConstructor;
@@ -21,17 +21,21 @@ public class StockInfoService {
      * */
     @Transactional(readOnly=true)
     public List<StockInfoRes> stockInfos() {
-        return stockInfoRepository.findAll().orElseThrow(() -> new StockNoExistException("cannot found stocks"))
+        return stockInfoRepository.findAll()
+                .filter(item->item.size()>0)
+                .orElseThrow(() -> new QueryNoExistException("cannot found stocks"))
                 .stream()
                 .map(StockInfo::getStockInfoRes)
                 .toList();
     }
     /**
-     * hits update
+     * 순위가 변동하는 메서드
      * */
     @Transactional
     public long reRanking() {
-        return stockInfoRepository.findAll().orElseThrow(()-> new StockNoExistException("cannot found stocks"))
+        return stockInfoRepository.findAll()
+                .filter(item->item.size()>0)
+                .orElseThrow(()-> new QueryNoExistException("cannot found stocks"))
                 .stream()
                 .mapToLong(StockInfo::reRanking)
                 .sum();
@@ -42,29 +46,37 @@ public class StockInfoService {
      */
     @Transactional(readOnly = true)
     public StockTopFiveAllRes<List<StockInfoRes>> stockTopFiveAll(){
-        return stockInfoRepository.findTopFiveAll().orElseThrow(()->new StockNoExistException("cannot found StockInfo"));
+        return stockInfoRepository.findTopFiveAll();
     }
     @Transactional(readOnly = true)
     public List<StockInfoRes> stockDetailTopHits(int offset, int limit) {
         Pageable pageable = PageRequest.of(offset,limit);
-        return stockInfoRepository.findDetailTopHits(pageable);
+        return stockInfoRepository.findDetailTopHits(pageable)
+                .filter(item->item.size()>0)
+                .orElseThrow(()->new QueryNoExistException("cannot found StockInfo"));
     }
 
     @Transactional(readOnly = true)
     public List<StockInfoRes> stockDetailTopTradingVolume(int offset, int limit) {
         Pageable pageable = PageRequest.of(offset,limit);
-        return stockInfoRepository.findDetailTopTradingVolume(pageable);
+        return stockInfoRepository.findDetailTopTradingVolume(pageable)
+                .filter(item->item.size()>0)
+                .orElseThrow(()->new QueryNoExistException("cannot found StockInfo"));
     }
 
     @Transactional(readOnly = true)
     public List<StockInfoRes> stockDetailTopGrowthRate(int offset, int limit) {
         Pageable pageable = PageRequest.of(offset,limit);
-        return stockInfoRepository.findDetailTopGrowthRate(pageable);
+        return stockInfoRepository.findDetailTopGrowthRate(pageable)
+                .filter(item->item.size()>0)
+                .orElseThrow(()->new QueryNoExistException("cannot found StockInfo"));
     }
 
     @Transactional(readOnly = true)
     public List<StockInfoRes> stockDetailBottomGrowthRate(int offset, int limit) {
         Pageable pageable = PageRequest.of(offset,limit);
-        return stockInfoRepository.findDetailBottomGrowthRate(pageable);
+        return stockInfoRepository.findDetailBottomGrowthRate(pageable)
+                .filter(item->item.size()>0)
+                .orElseThrow(()->new QueryNoExistException("cannot found StockInfo"));
     }
 }

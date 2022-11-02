@@ -10,7 +10,6 @@ import javax.persistence.Id;
 @Entity
 @Getter
 @DynamicUpdate
-@EqualsAndHashCode
 public class MarketInfo {
     /**시장코드**/
     @Id

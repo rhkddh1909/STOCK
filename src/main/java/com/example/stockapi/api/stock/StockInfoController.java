@@ -1,6 +1,6 @@
 package com.example.stockapi.api.stock;
 
-import com.example.stockapi.api.exception.StockNoExistException;
+import com.example.stockapi.api.exception.QueryNoExistException;
 import com.example.stockapi.api.util.BaseDto;
 import com.example.stockapi.api.util.CUSTOM_CODE;
 import com.example.stockapi.api.util.Util;
@@ -29,7 +29,7 @@ public class StockInfoController {
                     .rsltData(stockInfoRes)
                     .build();
         }
-        catch(StockNoExistException e){
+        catch(QueryNoExistException e){
             return Util.getErrorBody(e.getMessage(), new ArrayList<StockInfoRes>());
         }
     }
@@ -43,7 +43,7 @@ public class StockInfoController {
                     .rsltMsg(reRankCount+"건의 데이터가 변동되었습니다.")
                     .build();
         }
-        catch(StockNoExistException e){
+        catch(QueryNoExistException e){
             return Util.getErrorBody(e.getMessage(), new Object());
         }
     }
@@ -58,7 +58,7 @@ public class StockInfoController {
                     .rsltData(stockTopFiveAllRes)
                     .build();
         }
-        catch(StockNoExistException e){
+        catch(QueryNoExistException e){
             return Util.getErrorBody(e.getMessage(), new StockTopFiveAllRes<List<StockInfoRes>>());
         }
     }
@@ -73,7 +73,7 @@ public class StockInfoController {
                     .rsltData(stockDetailTopHitsRes)
                     .build();
         }
-        catch(StockNoExistException e){
+        catch(QueryNoExistException e){
             return Util.getErrorBody(e.getMessage(), new ArrayList<StockInfoRes>());
         }
     }
@@ -89,7 +89,7 @@ public class StockInfoController {
                     .rsltData(stockDetailTopHitsRes)
                     .build();
         }
-        catch(StockNoExistException e){
+        catch(QueryNoExistException e){
             return Util.getErrorBody(e.getMessage(), new ArrayList<StockInfoRes>());
         }
     }
@@ -105,7 +105,7 @@ public class StockInfoController {
                     .rsltData(stockDetailTopHitsRes)
                     .build();
         }
-        catch(StockNoExistException e){
+        catch(QueryNoExistException e){
             return Util.getErrorBody(e.getMessage(), new ArrayList<StockInfoRes>());
         }
     }
@@ -121,7 +121,7 @@ public class StockInfoController {
                     .rsltData(stockDetailTopHitsRes)
                     .build();
         }
-        catch(StockNoExistException e){
+        catch(QueryNoExistException e){
             return Util.getErrorBody(e.getMessage(), new ArrayList<StockInfoRes>());
         }
     }
