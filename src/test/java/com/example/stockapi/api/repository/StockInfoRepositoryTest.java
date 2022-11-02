@@ -42,8 +42,6 @@ class StockInfoRepositoryTest {
     @Autowired
     private JPAQueryFactory queryFactory;
 
-    private StringPath aliasTradingVolume = Expressions.stringPath("tradingVolume");
-    private StringPath aliasGrowthRate = Expressions.stringPath("growthRate");
     @Test
     public void selectStockInfo_findAllTest(){
         assertThat(Optional.of(queryFactory.selectFrom(stockInfo).fetch()).orElse(List.of())).isNotEmpty();

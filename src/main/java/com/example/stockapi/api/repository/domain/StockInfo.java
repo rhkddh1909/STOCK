@@ -14,6 +14,8 @@ import javax.persistence.Id;
 public class StockInfo {
     @Id
     private String stockCode;
+    @Id
+    private String marketCode;
     private String stockName;
     private Long startingPrice;
     private Long currentPrice;
