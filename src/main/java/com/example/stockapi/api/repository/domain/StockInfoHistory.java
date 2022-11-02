@@ -28,7 +28,9 @@ public class StockInfoHistory{
     /**상승률**/
     private Long growthRate;
 
-    public StockInfoHistory(StockInfoHistoryID stockInfoHistoryID, String stockName, String marketCode, String marketName, Long startingPrice, Long endingPrice, Long sellingCount, Long buyingCount, Long tradingVolume, Long growthRate) {
+    private Long hits;
+
+    public StockInfoHistory(StockInfoHistoryID stockInfoHistoryID, String stockName, String marketCode, String marketName, Long startingPrice, Long endingPrice, Long sellingCount, Long buyingCount, Long tradingVolume, Long growthRate, Long hits) {
         this.stockInfoHistoryID = stockInfoHistoryID;
         this.stockName = stockName;
         this.marketCode = marketCode;
@@ -39,6 +41,7 @@ public class StockInfoHistory{
         this.buyingCount = buyingCount;
         this.tradingVolume = tradingVolume;
         this.growthRate = growthRate;
+        this.hits = hits;
     }
 
     public StockInfoHistory() {
