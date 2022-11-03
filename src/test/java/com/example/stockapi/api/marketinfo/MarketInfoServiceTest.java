@@ -90,27 +90,11 @@ class MarketInfoServiceTest {
     @Test
     public void closeMarket_thenCallbulkUpdateMarketInfo(){
         //Stubbing (given)
-        StockInfoHistory stockInfoHistory = StockInfoHistory.builder()
-                .historyId(1L)
-                .stockCode("000660")
-                .stockName("SK하이닉스")
-                .marketCode("0001")
-                .marketName("KOSDAQ")
-                .startingPrice(95700L)
-                .endingPrice(95700L)
-                .buyingCount(0L)
-                .sellingCount(0L)
-                .tradingVolume(0L)
-                .growthRate(0.0)
-                .hits(0L)
-                .marketNation("KOR")
-                .build();
+        StockInfoHistory stockInfoHistory = new StockInfoHistory(1L,"000660","SK하이닉스","0001","KOSDAQ",95700L,95700L,0L,0L,0L,0.0,0L,"KOR");
 
         StockInfoHistoryDto stockInfoHistoryDto = StockInfoHistoryDto.builder()
-                .historyId(1L)
                 .stockCode("000660")
                 .stockName("SK하이닉스")
-                .marketCode("0001")
                 .marketName("KOSDAQ")
                 .startingPrice(95700L)
                 .endingPrice(95700L)
@@ -123,7 +107,7 @@ class MarketInfoServiceTest {
                 .build();
 
         given(mockMarketInfoRepository.bulkUpdateMarketOpen(anyString(),anyString())).willReturn(Optional.of(2L));
-        given(mockStockInfoRepository.selectStockInfoHistorys(anyString())).willReturn(Optional.of(List.of(stockInfoHistoryDto)));
+        given(mockStockInfoRepository.selectStockInfoHistorys(anyString())).willReturn(Optional.of(List.of(stockInfoHistory)));
         given(mockStockInfoHistoryRepository.saveAll(any())).willReturn(List.of(stockInfoHistory));
 
         //service에서 openMarket 메서드를 호출할 때(when)

@@ -4,6 +4,7 @@ import com.example.stockapi.api.exception.QueryNoExistException;
 import com.example.stockapi.api.repository.MarketInfoRepository;
 import com.example.stockapi.api.repository.StockInfoHistorySaveRepository;
 import com.example.stockapi.api.repository.StockInfoRepository;
+import com.example.stockapi.api.repository.domain.StockInfo;
 import com.example.stockapi.api.repository.domain.StockInfoHistory;
 import com.example.stockapi.api.stockhistory.StockInfoHistoryDto;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.example.stockapi.api.util.CUSTOM_CODE.RSEULT.CLOSE;
 import static com.example.stockapi.api.util.CUSTOM_CODE.RSEULT.OPEN;
@@ -44,6 +46,12 @@ public class MarketInfoService {
     }
     @Transactional
     public Long openMarket(String nation) {
+        stockInfoRepository.findByNationOnly(nation)
+                .filter(item->item.size()>0)
+                .orElseThrow(()-> new QueryNoExistException("cannot found stocks to reRanking"))
+                .stream()
+                .forEach(StockInfo::reRanking);
+
         return marketInfoRepository.bulkUpdateMarketOpen(nation, OPEN.CODE())
                 .filter(item->item != 0L).orElseThrow(()->new QueryNoExistException("cannot found update info"));
     }
@@ -55,10 +63,7 @@ public class MarketInfoService {
 
         List<StockInfoHistory> stockInfoHistoryList = stockInfoRepository.selectStockInfoHistorys(nation)
                 .filter(item -> item.size() != 0)
-                .orElseThrow(() -> new QueryNoExistException("cannot found marketInfo"))
-                .stream()
-                .map(StockInfoHistoryDto::getStockInfoHistory)
-                .toList();
+                .orElseThrow(() -> new QueryNoExistException("cannot found marketInfo"));
 
         Optional.of(stockInfoHistorySaveRepository.saveAll(stockInfoHistoryList))
                 .filter(item->item.size() != 0)

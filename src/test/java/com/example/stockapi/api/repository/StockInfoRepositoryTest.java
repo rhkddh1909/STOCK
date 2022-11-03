@@ -529,7 +529,6 @@ class StockInfoRepositoryTest {
         .where(stockInfo.marketNation.eq(nation))
         .fetch();
 
-        assertThat(stockInfoHistoryList.get(0).getHistoryId()).isEqualTo(0L);
         assertThat(stockInfoHistoryList.get(0).getStockCode()).isEqualTo("005930");
     }
 }

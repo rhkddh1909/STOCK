@@ -27,10 +27,8 @@ class StockInfoHistoryControllerTest {
     public void stockInfoHistories_ThenCallStockInfoHistories(){
         //Stubbing (given)
         StockInfoHistoryDto stockInfoHistoryDto1 = StockInfoHistoryDto.builder()
-                .historyId(2L)
                 .stockCode("000660")
                 .stockName("SK하이닉스")
-                .marketCode("0001")
                 .marketName("KOSDAQ")
                 .startingPrice(95700L)
                 .endingPrice(95700L)
@@ -57,10 +55,8 @@ class StockInfoHistoryControllerTest {
     public void stockInfoHistories_ThenCallstockInfoHistoryAnalysis(){
         //Stubbing (given)
         StockInfoHistoryDto stockInfoHistoryDto1 = StockInfoHistoryDto.builder()
-                .historyId(2L)
                 .stockCode("000660")
                 .stockName("SK하이닉스")
-                .marketCode("0001")
                 .marketName("KOSDAQ")
                 .startingPrice(95700L)
                 .endingPrice(95700L)

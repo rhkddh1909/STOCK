@@ -44,6 +44,15 @@ public class StockInfoRepository{
                 .orElse(null);
     }
 
+    public Optional<List<StockInfo>> findByNationOnly(String nation){
+        return Optional.ofNullable(queryFactory
+                .selectFrom(stockInfo)
+                .where(
+                        eqNationOrDefault(nation)
+                )
+                .fetch());
+    }
+
     public Optional<List<StockInfo>> findByNation(String nation, String marketCode){
         return Optional.ofNullable(queryFactory
                 .selectFrom(stockInfo)
@@ -180,8 +189,8 @@ public class StockInfoRepository{
         return Optional.of(PageableExecutionUtils.getPage(growthRateList,pageable,() -> 100).get().collect(Collectors.toList()));
     }
 
-    public Optional<List<StockInfoHistoryDto>> selectStockInfoHistorys(String nation){
-        return Optional.ofNullable(queryFactory.select(Projections.fields(StockInfoHistoryDto.class,
+    public Optional<List<StockInfoHistory>> selectStockInfoHistorys(String nation){
+        return Optional.ofNullable(queryFactory.select(Projections.fields(StockInfoHistory.class,
                         marketInfo.marketSequence.as("historyId")
                         , stockInfo.stockCode
                         , stockInfo.stockName

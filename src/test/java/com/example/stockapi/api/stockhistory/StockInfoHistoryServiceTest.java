@@ -30,10 +30,8 @@ class StockInfoHistoryServiceTest {
     public void stockInfoHistories_ThenCallfindByNationAndStockCode(){
         //Stubbing (given)
         StockInfoHistoryDto stockInfoHistoryDto1 = StockInfoHistoryDto.builder()
-                .historyId(2L)
                 .stockCode("000660")
                 .stockName("SK하이닉스")
-                .marketCode("0001")
                 .marketName("KOSDAQ")
                 .startingPrice(95700L)
                 .endingPrice(95700L)
@@ -61,10 +59,8 @@ class StockInfoHistoryServiceTest {
     public void stockInfoHistoryAnalysis_ThenCallfindStockInfoHistoryGroupData(){
         //Stubbing (given)
         StockInfoHistoryDto stockInfoHistoryDto1 = StockInfoHistoryDto.builder()
-                .historyId(2L)
                 .stockCode("000660")
                 .stockName("SK하이닉스")
-                .marketCode("0001")
                 .marketName("KOSDAQ")
                 .startingPrice(95700L)
                 .endingPrice(95700L)

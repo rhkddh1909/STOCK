@@ -19,43 +19,13 @@ class StockInfoHistorySaveRepositoryTest {
 
     @Test
     public void createStockInfoHistory_insertStockInfoHistory(){
-        StockInfoHistory stockInfoHistory = StockInfoHistory.builder()
-                .historyId(1L)
-                .stockCode("000660")
-                .stockName("SK하이닉스")
-                .marketCode("0001")
-                .marketName("KOSDAQ")
-                .startingPrice(95700L)
-                .endingPrice(95700L)
-                .buyingCount(0L)
-                .sellingCount(0L)
-                .tradingVolume(0L)
-                .growthRate(0.0)
-                .hits(0L)
-                .marketNation("KOR")
-                .build();
+        StockInfoHistory stockInfoHistory = new StockInfoHistory(1L,"000660","SK하이닉스","0001","KOSDAQ",95700L,95700L,0L,0L,0L,0.0,0L,"KOR");
 
-        StockInfoHistory stockInfoHistory1 = StockInfoHistory.builder()
-                .historyId(1L)
-                .stockCode("000660")
-                .stockName("SK하이닉스")
-                .marketCode("0001")
-                .marketName("KOSDAQ")
-                .startingPrice(95700L)
-                .endingPrice(95700L)
-                .buyingCount(0L)
-                .sellingCount(0L)
-                .tradingVolume(0L)
-                .growthRate(0.0)
-                .hits(0L)
-                .marketNation("KOR")
-                .build();
+        StockInfoHistory stockInfoHistory1 = new StockInfoHistory(2L,"000660","SK하이닉스","0001","KOSDAQ",95700L,95700L,0L,0L,0L,0.0,0L,"KOR");
 
         StockInfoHistoryDto stockInfoHistoryDto = StockInfoHistoryDto.builder()
-                .historyId(1L)
                 .stockCode("000660")
                 .stockName("SK하이닉스")
-                .marketCode("0001")
                 .marketName("KOSDAQ")
                 .startingPrice(95700L)
                 .endingPrice(95700L)
@@ -68,10 +38,8 @@ class StockInfoHistorySaveRepositoryTest {
                 .build();
 
         StockInfoHistoryDto stockInfoHistoryDto1 = StockInfoHistoryDto.builder()
-                .historyId(2L)
                 .stockCode("000660")
                 .stockName("SK하이닉스")
-                .marketCode("0001")
                 .marketName("KOSDAQ")
                 .startingPrice(95700L)
                 .endingPrice(95700L)

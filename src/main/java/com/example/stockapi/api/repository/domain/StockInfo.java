@@ -109,4 +109,11 @@ public class StockInfo {
 
         return 1L;
     }
+
+    public void stockInfoInit(){
+        this.sellingCount = 0L;
+        this.buyingCount = 0L;
+        this.hits = 0L;
+        this.startingPrice = currentPrice;
+    }
 }

@@ -8,7 +8,6 @@ import javax.persistence.*;
 
 @Entity
 @Getter
-@Builder
 @EqualsAndHashCode
 @IdClass(StockInfoHistoryId.class)
 @Table(indexes =
