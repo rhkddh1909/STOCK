@@ -27,7 +27,8 @@ public class StockInfoHistoryRepository {
     }
 
     private BooleanExpression eqStockCode(String stockCode){
-        return Optional.ofNullable(stockInfoHistory.stockCode.eq(stockCode))
+        return Optional.ofNullable(stockCode)
+                .map(item->stockInfoHistory.marketCode.eq(stockCode))
                 .orElse(null);
     }
 
