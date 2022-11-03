@@ -50,8 +50,10 @@ public class Util {
     }
 
 
-    public static Long getAskingPrice(Long currentPrice) {
-        Long random = ThreadLocalRandom.current().nextLong(-5L,5L);
+    public static Long getAskingPrice(Long currentPrice, Long buyingCount, Long sellingCount) {
+        Long from = buyingCount > sellingCount ? -3L : -5L;
+        Long to = buyingCount > sellingCount ? 5L : 3L;
+        Long random = ThreadLocalRandom.current().nextLong(from,to);
 
         return checkPrice.apply(currentPrice)* random;
     }

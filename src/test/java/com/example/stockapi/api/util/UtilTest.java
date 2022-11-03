@@ -18,7 +18,9 @@ class UtilTest {
     @Test
     public void util_getAskingPriceTest(){
         Long currentPrice = 5000000L;
-        Long askingPrice = Util.getAskingPrice(currentPrice);
+        Long buyingCount = 2000L;
+        Long sellingCount = 1000L;
+        Long askingPrice = Util.getAskingPrice(currentPrice,buyingCount,sellingCount);
 
         assertThat(askingPrice).isIn(List.of(1L,5L,10L,50L,100L,500L,1000L));
     }

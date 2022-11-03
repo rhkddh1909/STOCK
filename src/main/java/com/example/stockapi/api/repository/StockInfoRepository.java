@@ -41,7 +41,7 @@ public class StockInfoRepository{
 
     public StockTopFiveAllRes<List<StockInfoRes>> findTopFiveAll(String nation) {
 
-        StockTopFiveAllRes<List<StockInfoRes>> queryResult = new StockTopFiveAllRes<List<StockInfoRes>>();
+        StockTopFiveAllRes<List<StockInfoRes>> queryResult = new StockTopFiveAllRes<>();
         Pageable pageable = PageRequest.of(0,5);
 
         queryResult.setStockTopFiveHits(findDetailTopHits(pageable,nation).orElseThrow(()->new QueryNoExistException("cannot found StockInfo")));
@@ -65,7 +65,7 @@ public class StockInfoRepository{
                 .toList())
                 .orElse(List.of());
 
-        return Optional.ofNullable(PageableExecutionUtils.getPage(hitsListDetail,pageable,() -> {return 100;}).get().collect(Collectors.toList()));
+        return Optional.of(PageableExecutionUtils.getPage(hitsListDetail,pageable,() -> 100).get().collect(Collectors.toList()));
     }
 
     public Optional<List<StockInfoRes>> findDetailTopTradingVolume(Pageable pageable, String nation) {
@@ -94,7 +94,7 @@ public class StockInfoRepository{
                         .fetch())
                 .orElse(List.of());
 
-        return Optional.of(PageableExecutionUtils.getPage(tradingVolumeListDetail,pageable,() -> {return 100;}).get().collect(Collectors.toList()));
+        return Optional.of(PageableExecutionUtils.getPage(tradingVolumeListDetail,pageable,() -> 100).get().collect(Collectors.toList()));
     }
 
     public Optional<List<StockInfoRes>> findDetailTopGrowthRate(Pageable pageable, String nation) {
@@ -122,7 +122,7 @@ public class StockInfoRepository{
                         .fetch())
                 .orElse(List.of());
 
-        return Optional.of(PageableExecutionUtils.getPage(growthRateList,pageable,() -> {return 100;}).get().collect(Collectors.toList()));
+        return Optional.of(PageableExecutionUtils.getPage(growthRateList,pageable,() -> 100).get().collect(Collectors.toList()));
     }
 
     public Optional<List<StockInfoRes>> findDetailBottomGrowthRate(Pageable pageable, String nation) {
@@ -150,6 +150,6 @@ public class StockInfoRepository{
                         .fetch())
                 .orElse(List.of());
 
-        return Optional.of(PageableExecutionUtils.getPage(growthRateList,pageable,() -> {return 100;}).get().collect(Collectors.toList()));
+        return Optional.of(PageableExecutionUtils.getPage(growthRateList,pageable,() -> 100).get().collect(Collectors.toList()));
     }
 }

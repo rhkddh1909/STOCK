@@ -5,7 +5,6 @@ import com.example.stockapi.api.stock.StockInfoRes;
 import com.example.stockapi.api.stock.StockTopFiveAllRes;
 import com.example.stockapi.api.util.Util;
 import com.example.stockapi.config.QuerydslTestConfiguration;
-import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.*;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -98,15 +97,15 @@ class StockInfoRepositoryTest {
 
         stockInfoList.forEach(StockInfo::reRanking);
 
-        List<StockInfo> stockInfoAfterList = Optional.of(queryFactory.selectFrom(stockInfo).fetch()).orElse(List.of());
+        List<StockInfo> stockInfoAfterList = Optional.of(queryFactory.selectFrom(stockInfo).where(eqNationOrDefault(nation)).fetch()).orElse(List.of());
 
         IntStream.range(0,stockInfoList.size()).forEach(item->{
             assertThat(stockInfoAfterList.get(item).getCurrentPrice())
                     .isBetween(stockInfoAfterList.get(item).getStartingPrice()+(askingPriceList.get(item)*-5)
                             ,stockInfoAfterList.get(item).getStartingPrice()+(askingPriceList.get(item)*5));
             assertThat(stockInfoAfterList.get(item).getHits()).isBetween(checkGrowthRateList.get(item)/10,checkGrowthRateList.get(item));
-            assertThat(stockInfoAfterList.get(item).getBuyingCount()).isBetween(checkGrowthRateList.get(item)/10,checkGrowthRateList.get(item)*5);
             assertThat(stockInfoAfterList.get(item).getSellingCount()).isBetween(checkGrowthRateList.get(item)/10,checkGrowthRateList.get(item)*5);
+            assertThat(stockInfoAfterList.get(item).getBuyingCount()).isBetween(checkGrowthRateList.get(item)/10,checkGrowthRateList.get(item)*5);
         });
     }
 

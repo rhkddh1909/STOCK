@@ -30,7 +30,7 @@ public class StockInfoController {
                     .build();
         }
         catch(QueryNoExistException e){
-            return Util.getErrorBody(e.getMessage(), new ArrayList<StockInfoRes>());
+            return Util.getErrorBody(e.getMessage(), new ArrayList<>());
         }
     }
     @GetMapping("reRanking")
@@ -59,7 +59,7 @@ public class StockInfoController {
                     .build();
         }
         catch(QueryNoExistException e){
-            return Util.getErrorBody(e.getMessage(), new StockTopFiveAllRes<List<StockInfoRes>>());
+            return Util.getErrorBody(e.getMessage(), new StockTopFiveAllRes<>());
         }
     }
     @GetMapping("stockDetailTopHits")
@@ -74,7 +74,7 @@ public class StockInfoController {
                     .build();
         }
         catch(QueryNoExistException e){
-            return Util.getErrorBody(e.getMessage(), new ArrayList<StockInfoRes>());
+            return Util.getErrorBody(e.getMessage(), new ArrayList<>());
         }
     }
 
@@ -90,7 +90,7 @@ public class StockInfoController {
                     .build();
         }
         catch(QueryNoExistException e){
-            return Util.getErrorBody(e.getMessage(), new ArrayList<StockInfoRes>());
+            return Util.getErrorBody(e.getMessage(), new ArrayList<>());
         }
     }
 
@@ -106,7 +106,7 @@ public class StockInfoController {
                     .build();
         }
         catch(QueryNoExistException e){
-            return Util.getErrorBody(e.getMessage(), new ArrayList<StockInfoRes>());
+            return Util.getErrorBody(e.getMessage(), new ArrayList<>());
         }
     }
 
@@ -122,7 +122,7 @@ public class StockInfoController {
                     .build();
         }
         catch(QueryNoExistException e){
-            return Util.getErrorBody(e.getMessage(), new ArrayList<StockInfoRes>());
+            return Util.getErrorBody(e.getMessage(), new ArrayList<>());
         }
     }
 }

@@ -77,7 +77,7 @@ public class StockInfo {
      * 현재가 업데이트
      * */
     public Long updateCurrPrice(){
-        return currentPrice + Util.getAskingPrice(currentPrice);
+        return currentPrice + Util.getAskingPrice(currentPrice,buyingCount,sellingCount);
     }
 
     /**

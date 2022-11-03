@@ -1,6 +1,5 @@
 package com.example.stockapi.api.stock;
 
-import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
