@@ -15,8 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
@@ -30,13 +29,13 @@ class StockInfoServiceTest {
     @Test
     public void stockInfos_ThenCallFindAllMethod(){
         //Stubbing Mock(given)
-        given(mockStockInfoRepository.findByNation(anyString())).willReturn(Optional.of(List.of(new StockInfo("0001","주식명", "시장코드", "시장명",100L,90L,0L,0L,0L,"KOR"))));
+        given(mockStockInfoRepository.findByNation(anyString(),anyString())).willReturn(Optional.of(List.of(new StockInfo("0001","주식명", "시장코드", "시장명",100L,90L,0L,0L,0L,"KOR"))));
 
         //mockStockInfoService가 StockInfos를 호출 할때 (when)
-        List<StockInfoRes> stockInfoRes = mockStockInfoService.stockInfos(anyString());
+        List<StockInfoRes> stockInfoRes = mockStockInfoService.stockInfos(anyString(),anyString());
 
         //findAll함수가 호출 되었는지 검증한다.(then)
-        then(mockStockInfoRepository).should().findByNation(anyString());
+        then(mockStockInfoRepository).should().findByNation(anyString(),anyString());
 
         assertThat(stockInfoRes.get(0)).isEqualTo(new StockInfoRes("0001","주식명", "시장명",100L,90L,0L,-10.0,0L));
     }
@@ -44,17 +43,17 @@ class StockInfoServiceTest {
     @Test
     public void reRanking_ThenCallfindAllMethodAndStockInfos(){
         //Stubbing Mock(given)
-        given(mockStockInfoRepository.findByNation(anyString())).willReturn(Optional.of(List.of(new StockInfo("0001","주식명", "시장명", "시장명",100L,90L,0L,0L,0L,"KOR"))));
+        given(mockStockInfoRepository.findByNation(anyString(),anyString())).willReturn(Optional.of(List.of(new StockInfo("0001","주식명", "시장명", "시장명",100L,90L,0L,0L,0L,"KOR"))));
 
         //mockStockInfoService가 reRanking 호출 할때 (when)
-        Long reRankingCount = mockStockInfoService.reRanking(anyString());
+        Long reRankingCount = mockStockInfoService.reRanking(anyString(),anyString());
 
         //findAll함수가 호출 되었는지 검증한다.(then)
-        then(mockStockInfoRepository).should().findByNation(anyString());
+        then(mockStockInfoRepository).should().findByNation(anyString(),anyString());
 
         assertThat(reRankingCount).isEqualTo(1L);
 
-        List<StockInfoRes> stockInfoRes = mockStockInfoService.stockInfos(anyString());
+        List<StockInfoRes> stockInfoRes = mockStockInfoService.stockInfos(anyString(),anyString());
 
         assertThat(stockInfoRes.get(0).getHits()).isBetween(50L,500L);
         assertThat(stockInfoRes.get(0).getTradingVolume()).isNotEqualTo(0L);
@@ -72,13 +71,13 @@ class StockInfoServiceTest {
         stockTopFiveAllRes.setStockTopFiveGrowthRate(List.of(new StockInfoRes(),new StockInfoRes(),new StockInfoRes(),new StockInfoRes(),new StockInfoRes()));
         stockTopFiveAllRes.setStockTopFiveTradingVolume(List.of(new StockInfoRes(),new StockInfoRes(),new StockInfoRes(),new StockInfoRes(),new StockInfoRes()));
 
-        given(mockStockInfoRepository.findTopFiveAll(anyString())).willReturn(stockTopFiveAllRes);
+        given(mockStockInfoRepository.findTopFiveAll(anyString(),anyString())).willReturn(stockTopFiveAllRes);
 
         //mockStockInfoService가 selectListStockTopFiveAllRes 호출 할때 (when)
-        StockTopFiveAllRes<List<StockInfoRes>> testStockTopFiveAllRes = mockStockInfoService.stockTopFiveAll("KOR");
+        StockTopFiveAllRes<List<StockInfoRes>> testStockTopFiveAllRes = mockStockInfoService.stockTopFiveAll(anyString(),anyString());
 
         //findTopFiveAll() 메서드가 호출되었는지 검증
-        then(mockStockInfoRepository).should().findTopFiveAll("KOR");
+        then(mockStockInfoRepository).should().findTopFiveAll(anyString(),anyString());
 
         int objectSize = 0;
         objectSize += testStockTopFiveAllRes.getStockTopFiveHits().size();
@@ -98,14 +97,13 @@ class StockInfoServiceTest {
         for(int i = 0; i < 20; i++){
             stockDetailTopHits.get().add(new StockInfoRes());
         }
-        given(mockStockInfoRepository.findDetailTopHits(any(),anyString())).willReturn(stockDetailTopHits);
+        given(mockStockInfoRepository.findDetailTopHits(any(),anyString(),anyString())).willReturn(stockDetailTopHits);
 
         //service에서 stockDetailTopHits를 호출 했을 때
-        List<StockInfoRes> stockTopFiveAll = mockStockInfoService.stockDetailTopHits(0,20,"KOR");
+        List<StockInfoRes> stockTopFiveAll = mockStockInfoService.stockDetailTopHits(0,20,"KOR","0001");
 
         //stockInfoRepository에서 findDetailTopHits를 호출했는지 검증
-        Pageable pageable = PageRequest.of(0,20);
-        then(mockStockInfoRepository).should().findDetailTopHits(pageable,"KOR");
+        then(mockStockInfoRepository).should().findDetailTopHits(any(),anyString(),anyString());
 
         assertThat(stockTopFiveAll.size()).isEqualTo(20);
     }
@@ -118,14 +116,13 @@ class StockInfoServiceTest {
         for(int i = 0; i < 20; i++){
             stockTopFiveAllRes.get().add(new StockInfoRes());
         }
-        given(mockStockInfoRepository.findDetailTopTradingVolume(any(),anyString())).willReturn(stockTopFiveAllRes);
+        given(mockStockInfoRepository.findDetailTopTradingVolume(any(),anyString(),anyString())).willReturn(stockTopFiveAllRes);
 
         //service에서 stockDetailTopHits를 호출 했을 때
-        List<StockInfoRes> stockTopFiveAll = mockStockInfoService.stockDetailTopTradingVolume(0,20,"KOR");
+        List<StockInfoRes> stockTopFiveAll = mockStockInfoService.stockDetailTopTradingVolume(0,20,"KOR","0001");
 
         //stockInfoRepository에서 findDetailTopHits를 호출했는지 검증
-        Pageable pageable = PageRequest.of(0,20);
-        then(mockStockInfoRepository).should().findDetailTopTradingVolume(pageable,"KOR");
+        then(mockStockInfoRepository).should().findDetailTopTradingVolume(any(),anyString(),anyString());
 
         assertThat(stockTopFiveAll.size()).isEqualTo(20);
     }
@@ -138,14 +135,13 @@ class StockInfoServiceTest {
         for(int i = 0; i < 20; i++){
             stockTopFiveAllRes.get().add(new StockInfoRes());
         }
-        given(mockStockInfoRepository.findDetailTopGrowthRate(any(),anyString())).willReturn(stockTopFiveAllRes);
+        given(mockStockInfoRepository.findDetailTopGrowthRate(any(),anyString(),anyString())).willReturn(stockTopFiveAllRes);
 
         //service에서 stockDetailTopHits를 호출 했을 때
-        List<StockInfoRes> stockTopFiveAll = mockStockInfoService.stockDetailTopGrowthRate(0,20,"KOR");
+        List<StockInfoRes> stockTopFiveAll = mockStockInfoService.stockDetailTopGrowthRate(0,20,"KOR","0001");
 
         //stockInfoRepository에서 findDetailTopHits를 호출했는지 검증
-        Pageable pageable = PageRequest.of(0,20);
-        then(mockStockInfoRepository).should().findDetailTopGrowthRate(pageable,"KOR");
+        then(mockStockInfoRepository).should().findDetailTopGrowthRate(any(),anyString(),anyString());
 
         assertThat(stockTopFiveAll.size()).isEqualTo(20);
     }
@@ -159,14 +155,13 @@ class StockInfoServiceTest {
             stockDetailTopBottomGrowthRate.get().add(new StockInfoRes());
         }
 
-        given(mockStockInfoRepository.findDetailBottomGrowthRate(any(),anyString())).willReturn(stockDetailTopBottomGrowthRate);
+        given(mockStockInfoRepository.findDetailBottomGrowthRate(any(),anyString(),anyString())).willReturn(stockDetailTopBottomGrowthRate);
 
         //service에서 stockDetailTopHits를 호출 했을 때
-        List<StockInfoRes> result = mockStockInfoService.stockDetailBottomGrowthRate(0,20,"KOR");
+        List<StockInfoRes> result = mockStockInfoService.stockDetailBottomGrowthRate(0,20,"KOR","0001");
 
         //stockInfoRepository에서 findDetailTopHits를 호출했는지 검증
-        Pageable pageable = PageRequest.of(0,20);
-        then(mockStockInfoRepository).should().findDetailBottomGrowthRate(pageable,"KOR");
+        then(mockStockInfoRepository).should().findDetailBottomGrowthRate(any(),anyString(),anyString());
 
         assertThat(result.size()).isEqualTo(20);
     }

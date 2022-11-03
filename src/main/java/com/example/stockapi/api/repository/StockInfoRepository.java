@@ -27,35 +27,50 @@ public class StockInfoRepository{
     private final StringPath aliasTradingVolume = Expressions.stringPath("tradingVolume");
     private final StringPath aliasGrowthRate = Expressions.stringPath("growthRate");
 
+    /**nation을 입력받고 nation값을 체크하여 동적 쿼리 추가**/
     private BooleanExpression eqNationOrDefault(String nation){
         return Optional.ofNullable(nation)
                 .map(item->stockInfo.marketNation.eq(nation.toUpperCase()))
                 .orElse(stockInfo.marketNation.eq("KOR"));
     }
-    public Optional<List<StockInfo>> findByNation(String nation){
+
+    /**marketCode를 입력받고 marketCode값을 체크하여 동적 쿼리 추가**/
+    private BooleanExpression eqMarketCode(String marketCode){
+        return Optional.ofNullable(marketCode)
+                .map(item->stockInfo.marketCode.eq(marketCode.toUpperCase()))
+                .orElse(null);
+    }
+
+    public Optional<List<StockInfo>> findByNation(String nation, String marketCode){
         return Optional.ofNullable(queryFactory
                 .selectFrom(stockInfo)
-                .where(eqNationOrDefault(nation))
+                .where(
+                        eqNationOrDefault(nation)
+                        ,eqMarketCode(marketCode)
+                )
                 .fetch());
     }
 
-    public StockTopFiveAllRes<List<StockInfoRes>> findTopFiveAll(String nation) {
+    public StockTopFiveAllRes<List<StockInfoRes>> findTopFiveAll(String nation, String marketCode) {
 
         StockTopFiveAllRes<List<StockInfoRes>> queryResult = new StockTopFiveAllRes<>();
         Pageable pageable = PageRequest.of(0,5);
 
-        queryResult.setStockTopFiveHits(findDetailTopHits(pageable,nation).orElseThrow(()->new QueryNoExistException("cannot found StockInfo")));
-        queryResult.setStockTopFiveTradingVolume(findDetailTopTradingVolume(pageable,nation).orElseThrow(()->new QueryNoExistException("cannot found StockInfo")));
-        queryResult.setStockTopFiveGrowthRate(findDetailTopGrowthRate(pageable,nation).orElseThrow(()->new QueryNoExistException("cannot found StockInfo")));
-        queryResult.setStockBottomFiveGrowthRate(findDetailBottomGrowthRate(pageable,nation).orElseThrow(()->new QueryNoExistException("cannot found StockInfo")));
+        queryResult.setStockTopFiveHits(findDetailTopHits(pageable,nation,marketCode).orElseThrow(()->new QueryNoExistException("cannot found StockInfo")));
+        queryResult.setStockTopFiveTradingVolume(findDetailTopTradingVolume(pageable,nation,marketCode).orElseThrow(()->new QueryNoExistException("cannot found StockInfo")));
+        queryResult.setStockTopFiveGrowthRate(findDetailTopGrowthRate(pageable,nation,marketCode).orElseThrow(()->new QueryNoExistException("cannot found StockInfo")));
+        queryResult.setStockBottomFiveGrowthRate(findDetailBottomGrowthRate(pageable,nation,marketCode).orElseThrow(()->new QueryNoExistException("cannot found StockInfo")));
 
         return queryResult;
     }
 
-    public Optional<List<StockInfoRes>> findDetailTopHits(Pageable pageable,String nation) {
+    public Optional<List<StockInfoRes>> findDetailTopHits(Pageable pageable,String nation, String marketCode) {
         List<StockInfoRes> hitsListDetail = Optional.of(queryFactory
                         .selectFrom(stockInfo)
-                        .where(eqNationOrDefault(nation))
+                        .where(
+                                eqNationOrDefault(nation)
+                                ,eqMarketCode(marketCode)
+                        )
                         .orderBy(stockInfo.hits.desc())
                         .offset(pageable.getOffset())
                         .limit(pageable.getPageSize())
@@ -68,7 +83,7 @@ public class StockInfoRepository{
         return Optional.of(PageableExecutionUtils.getPage(hitsListDetail,pageable,() -> 100).get().collect(Collectors.toList()));
     }
 
-    public Optional<List<StockInfoRes>> findDetailTopTradingVolume(Pageable pageable, String nation) {
+    public Optional<List<StockInfoRes>> findDetailTopTradingVolume(Pageable pageable, String nation, String marketCode) {
         List<StockInfoRes> tradingVolumeListDetail = Optional.ofNullable(queryFactory
                         .select(Projections.fields(StockInfoRes.class,
                                 stockInfo.stockCode
@@ -87,7 +102,10 @@ public class StockInfoRepository{
                                                 .multiply(100.00),2).as("growthRate")
                         ))
                         .from(stockInfo)
-                        .where(eqNationOrDefault(nation))
+                        .where(
+                                eqNationOrDefault(nation)
+                                ,eqMarketCode(marketCode)
+                        )
                         .orderBy(aliasTradingVolume.desc())
                         .offset(pageable.getOffset())
                         .limit(pageable.getPageSize())
@@ -97,7 +115,7 @@ public class StockInfoRepository{
         return Optional.of(PageableExecutionUtils.getPage(tradingVolumeListDetail,pageable,() -> 100).get().collect(Collectors.toList()));
     }
 
-    public Optional<List<StockInfoRes>> findDetailTopGrowthRate(Pageable pageable, String nation) {
+    public Optional<List<StockInfoRes>> findDetailTopGrowthRate(Pageable pageable, String nation, String marketCode) {
         List<StockInfoRes> growthRateList = Optional.ofNullable(queryFactory
                         .select(Projections.fields(StockInfoRes.class,
                                 stockInfo.stockCode
@@ -115,7 +133,10 @@ public class StockInfoRepository{
                                         .multiply(100.00),2).as("growthRate")
                         ))
                         .from(stockInfo)
-                        .where(eqNationOrDefault(nation))
+                        .where(
+                                eqNationOrDefault(nation)
+                                ,eqMarketCode(marketCode)
+                        )
                         .orderBy(aliasGrowthRate.desc())
                         .offset(pageable.getOffset())
                         .limit(pageable.getPageSize())
@@ -125,7 +146,7 @@ public class StockInfoRepository{
         return Optional.of(PageableExecutionUtils.getPage(growthRateList,pageable,() -> 100).get().collect(Collectors.toList()));
     }
 
-    public Optional<List<StockInfoRes>> findDetailBottomGrowthRate(Pageable pageable, String nation) {
+    public Optional<List<StockInfoRes>> findDetailBottomGrowthRate(Pageable pageable, String nation, String marketCode) {
         List<StockInfoRes> growthRateList = Optional.ofNullable(queryFactory
                         .select(Projections.fields(StockInfoRes.class,
                                 stockInfo.stockCode
@@ -143,7 +164,10 @@ public class StockInfoRepository{
                                         .multiply(100.00),2).as("growthRate")
                         ))
                         .from(stockInfo)
-                        .where(eqNationOrDefault(nation))
+                        .where(
+                                eqNationOrDefault(nation)
+                                ,eqMarketCode(marketCode)
+                        )
                         .orderBy(aliasGrowthRate.asc())
                         .offset(pageable.getOffset())
                         .limit(pageable.getPageSize())

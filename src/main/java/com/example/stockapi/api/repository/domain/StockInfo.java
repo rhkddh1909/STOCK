@@ -13,7 +13,12 @@ import javax.persistence.Table;
 @Entity
 @Getter
 @DynamicUpdate
-@Table(indexes = @Index(name="i_marketCode", columnList = "marketCode"))
+@Table(indexes =
+{
+    @Index(name="i_stockCode", columnList = "stockCode", unique = true)
+    , @Index(name="i_marketCode", columnList = "marketCode")
+    , @Index(name="i_marketNation", columnList = "marketNation")
+})
 public class StockInfo {
     /**종목 코드**/
     @Id
