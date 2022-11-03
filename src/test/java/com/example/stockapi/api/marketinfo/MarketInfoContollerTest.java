@@ -9,9 +9,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 
+import static com.example.stockapi.api.util.CUSTOM_CODE.RSEULT.SUCCESS;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -64,5 +63,33 @@ class MarketInfoContollerTest {
         then(mockMarketInfoService).should().getMarketList();
 
         assertThat(marketInfoResList.getRsltData()).isEqualTo(List.of(new MarketInfoRes("KOSPI","Y","KOR")));
+    }
+
+    @Test
+    public void openMarket_thenCallOpenMarket(){
+        //Stubbing (given)
+        given(mockMarketInfoService.openMarket(anyString())).willReturn(2L);
+
+        //openMarket을 컨트롤러에서 호출 했을 때 (when)
+        BaseDto openMarketRes = mockMarketInfoContoller.openMarket("KOR");
+
+        //openMarket을 서비스에서 호출하는지 검증 (then)
+        then(mockMarketInfoService).should().openMarket(anyString());
+
+        assertThat(openMarketRes.getStatus()).isEqualTo(SUCCESS.CODE());
+    }
+
+    @Test
+    public void closeMarket_thenCallOpenMarket(){
+        //Stubbing (given)
+        given(mockMarketInfoService.closeMarket(anyString())).willReturn(2L);
+
+        //openMarket을 컨트롤러에서 호출 했을 때 (when)
+        BaseDto openMarketRes = mockMarketInfoContoller.closeMarket("KOR");
+
+        //openMarket을 서비스에서 호출하는지 검증 (then)
+        then(mockMarketInfoService).should().closeMarket(anyString());
+
+        assertThat(openMarketRes.getStatus()).isEqualTo(SUCCESS.CODE());
     }
 }

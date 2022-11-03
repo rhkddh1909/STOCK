@@ -1,5 +1,8 @@
 package com.example.stockapi.api.stock;
 
+import com.example.stockapi.api.exception.MarketException;
+import com.example.stockapi.api.marketinfo.MarketInfoRes;
+import com.example.stockapi.api.repository.MarketInfoRepository;
 import com.example.stockapi.api.repository.StockInfoRepository;
 import com.example.stockapi.api.repository.domain.StockInfo;
 import org.junit.jupiter.api.Test;
@@ -7,15 +10,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
@@ -23,6 +25,8 @@ import static org.mockito.BDDMockito.then;
 class StockInfoServiceTest {
     @Mock
     StockInfoRepository mockStockInfoRepository;
+    @Mock
+    MarketInfoRepository mockMarketInfoRepository;
     @InjectMocks
     StockInfoService mockStockInfoService;
 
@@ -59,6 +63,22 @@ class StockInfoServiceTest {
         assertThat(stockInfoRes.get(0).getTradingVolume()).isNotEqualTo(0L);
         assertThat(stockInfoRes.get(0).getCurrentPrice()).isNotEqualTo(90L);
         assertThat(stockInfoRes.get(0).getGrowthRate()).isNotEqualTo(-10.0);
+    }
+
+    @Test
+    public void reRanking_ThenCallfindByMarketNationAndMarketNotOpenException(){
+        //Stubbing Mock(given)
+        given(mockMarketInfoRepository.findByMarketNation(anyString())).willReturn(Optional.of(List.of(new MarketInfoRes("시장명", "N","KOR"),new MarketInfoRes("시장명", "Y","KOR"))));
+
+        try {
+            //mockStockInfoService가 reRanking 호출 할때 (when)
+            Long reRankingCount = mockStockInfoService.reRanking("KOR","0001");
+        }
+        catch (MarketException e){
+            //findAll함수가 호출 되었는지 검증한다.(then)
+            then(mockMarketInfoRepository).should().findByMarketNation(anyString());
+            assertThat(e.getMessage()).isEqualTo("시장이 열리지 않았습니다.");
+        }
     }
 
     @Test

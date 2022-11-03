@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+import static com.example.stockapi.api.util.CUSTOM_CODE.RSEULT.ERROR;
 import static org.assertj.core.api.Assertions.assertThat;
 class UtilTest {
     @Test
@@ -11,7 +12,7 @@ class UtilTest {
         String message = "test";
         BaseDto errorDto = Util.getErrorBody(message, new Object());
 
-        assertThat(errorDto.getStatus()).isEqualTo(CUSTOM_CODE.RSEULT.ERROR.STATUS());
+        assertThat(errorDto.getStatus()).isEqualTo(ERROR.CODE());
         assertThat(errorDto.getRsltMsg()).isEqualTo(message);
     }
 

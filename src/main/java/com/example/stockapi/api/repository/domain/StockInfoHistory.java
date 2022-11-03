@@ -1,11 +1,23 @@
 package com.example.stockapi.api.repository.domain;
 
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.Index;
+import javax.persistence.Table;
+
 @Entity
 @Getter
+@Builder
+@EqualsAndHashCode
+@Table(indexes =
+{
+    @Index(name="i_stockInfoHistoryID", columnList = "stockInfoHistoryID", unique = true)
+    , @Index(name="i_marketNation", columnList = "marketNation")
+})
 public class StockInfoHistory{
     @EmbeddedId
     private StockInfoHistoryID stockInfoHistoryID;
@@ -26,11 +38,13 @@ public class StockInfoHistory{
     /**거래량**/
     private Long tradingVolume;
     /**상승률**/
-    private Long growthRate;
-
+    private Double growthRate;
+    /**조회수**/
     private Long hits;
+    /**주식국가**/
+    private String marketNation;
 
-    public StockInfoHistory(StockInfoHistoryID stockInfoHistoryID, String stockName, String marketCode, String marketName, Long startingPrice, Long endingPrice, Long sellingCount, Long buyingCount, Long tradingVolume, Long growthRate, Long hits) {
+    public StockInfoHistory(StockInfoHistoryID stockInfoHistoryID, String stockName, String marketCode, String marketName, Long startingPrice, Long endingPrice, Long sellingCount, Long buyingCount, Long tradingVolume, Double growthRate, Long hits, String marketNation) {
         this.stockInfoHistoryID = stockInfoHistoryID;
         this.stockName = stockName;
         this.marketCode = marketCode;
@@ -42,6 +56,7 @@ public class StockInfoHistory{
         this.tradingVolume = tradingVolume;
         this.growthRate = growthRate;
         this.hits = hits;
+        this.marketNation = marketNation;
     }
 
     public StockInfoHistory() {

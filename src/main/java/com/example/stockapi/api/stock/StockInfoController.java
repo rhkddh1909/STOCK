@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.stockapi.api.util.CUSTOM_CODE.RSEULT.SUCCESS;
+
 @RestController
 @RequiredArgsConstructor
 public class StockInfoController {
@@ -24,12 +26,12 @@ public class StockInfoController {
             List<StockInfoRes> stockInfoRes = stockInfoService.stockInfos(nation, marketCode);
 
             return BaseDto.<List<StockInfoRes>>builder()
-                    .status(CUSTOM_CODE.RSEULT.SUCCESS.STATUS())
+                    .status(SUCCESS.CODE())
                     .rsltMsg("")
                     .rsltData(stockInfoRes)
                     .build();
         }
-        catch(QueryNoExistException e){
+        catch(Exception e){
             return Util.getErrorBody(e.getMessage(), new ArrayList<>());
         }
     }
@@ -39,11 +41,11 @@ public class StockInfoController {
             Long reRankCount = stockInfoService.reRanking(nation,marketCode);
 
             return BaseDto.builder()
-                    .status(CUSTOM_CODE.RSEULT.SUCCESS.STATUS())
+                    .status(SUCCESS.CODE())
                     .rsltMsg(reRankCount+"건의 데이터가 변동되었습니다.")
                     .build();
         }
-        catch(QueryNoExistException e){
+        catch(Exception e){
             return Util.getErrorBody(e.getMessage(), new Object());
         }
     }
@@ -53,12 +55,12 @@ public class StockInfoController {
             StockTopFiveAllRes<List<StockInfoRes>> stockTopFiveAllRes = stockInfoService.stockTopFiveAll(nation, marketCode);
 
             return BaseDto.<StockTopFiveAllRes<List<StockInfoRes>>>builder()
-                    .status(CUSTOM_CODE.RSEULT.SUCCESS.STATUS())
+                    .status(SUCCESS.CODE())
                     .rsltMsg("")
                     .rsltData(stockTopFiveAllRes)
                     .build();
         }
-        catch(QueryNoExistException e){
+        catch(Exception e){
             return Util.getErrorBody(e.getMessage(), new StockTopFiveAllRes<>());
         }
     }
@@ -68,12 +70,12 @@ public class StockInfoController {
             List<StockInfoRes> stockDetailTopHitsRes = stockInfoService.stockDetailTopHits(pageNum, pageSize, nation, marketCode);
 
             return BaseDto.<List<StockInfoRes>>builder()
-                    .status(CUSTOM_CODE.RSEULT.SUCCESS.STATUS())
+                    .status(SUCCESS.CODE())
                     .rsltMsg("")
                     .rsltData(stockDetailTopHitsRes)
                     .build();
         }
-        catch(QueryNoExistException e){
+        catch(Exception e){
             return Util.getErrorBody(e.getMessage(), new ArrayList<>());
         }
     }
@@ -84,7 +86,7 @@ public class StockInfoController {
             List<StockInfoRes> stockDetailTopHitsRes = stockInfoService.stockDetailTopTradingVolume(pageNum, pageSize, nation, marketCode);
 
             return BaseDto.<List<StockInfoRes>>builder()
-                    .status(CUSTOM_CODE.RSEULT.SUCCESS.STATUS())
+                    .status(SUCCESS.CODE())
                     .rsltMsg("")
                     .rsltData(stockDetailTopHitsRes)
                     .build();
@@ -100,7 +102,7 @@ public class StockInfoController {
             List<StockInfoRes> stockDetailTopHitsRes = stockInfoService.stockDetailTopGrowthRate(pageNum, pageSize, nation, marketCode);
 
             return BaseDto.<List<StockInfoRes>>builder()
-                    .status(CUSTOM_CODE.RSEULT.SUCCESS.STATUS())
+                    .status(SUCCESS.CODE())
                     .rsltMsg("")
                     .rsltData(stockDetailTopHitsRes)
                     .build();
@@ -116,7 +118,7 @@ public class StockInfoController {
             List<StockInfoRes> stockDetailTopHitsRes = stockInfoService.stockDetailBottomGrowthRate(pageNum, pageSize, nation, marketCode);
 
             return BaseDto.<List<StockInfoRes>>builder()
-                    .status(CUSTOM_CODE.RSEULT.SUCCESS.STATUS())
+                    .status(SUCCESS.CODE())
                     .rsltMsg("")
                     .rsltData(stockDetailTopHitsRes)
                     .build();

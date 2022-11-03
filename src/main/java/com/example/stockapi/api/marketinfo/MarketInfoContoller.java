@@ -1,8 +1,6 @@
 package com.example.stockapi.api.marketinfo;
 
-import com.example.stockapi.api.exception.QueryNoExistException;
 import com.example.stockapi.api.util.BaseDto;
-import com.example.stockapi.api.util.CUSTOM_CODE;
 import com.example.stockapi.api.util.Util;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,6 +9,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
+import static com.example.stockapi.api.util.CUSTOM_CODE.RSEULT.SUCCESS;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,7 +24,7 @@ public class MarketInfoContoller {
             List<MarketInfoRes> marketListAll = marketInfoService.getMarketList();
 
             return BaseDto.<List<MarketInfoRes>>builder()
-                    .status(CUSTOM_CODE.RSEULT.SUCCESS.STATUS())
+                    .status(SUCCESS.CODE())
                     .rsltMsg("")
                     .rsltData(marketListAll)
                     .build();
@@ -40,7 +41,7 @@ public class MarketInfoContoller {
             MarketInfoRes marketInfoByCode = marketInfoService.getMarketInfoByCode(marketCode);
 
             return BaseDto.<MarketInfoRes>builder()
-                    .status(CUSTOM_CODE.RSEULT.SUCCESS.STATUS())
+                    .status(SUCCESS.CODE())
                     .rsltMsg("")
                     .rsltData(marketInfoByCode)
                     .build();
@@ -56,13 +57,44 @@ public class MarketInfoContoller {
             List<MarketInfoRes> marketInfoByNation = marketInfoService.getMarketInfoByNation(marketNation);
 
             return BaseDto.<List<MarketInfoRes>>builder()
-                    .status(CUSTOM_CODE.RSEULT.SUCCESS.STATUS())
+                    .status(SUCCESS.CODE())
                     .rsltMsg("")
                     .rsltData(marketInfoByNation)
                     .build();
 
         }catch(Exception e){
             return Util.getErrorBody(e.getMessage(), new ArrayList<MarketInfoRes>());
+        }
+    }
+
+    @GetMapping("openMarket")
+    public BaseDto<Object> openMarket(String nation) {
+        try{
+
+            Long updateCount = marketInfoService.openMarket(nation);
+
+            return BaseDto.<Object>builder()
+                    .status(SUCCESS.CODE())
+                    .rsltMsg(updateCount+"개의 "+ Optional.ofNullable(nation).orElse("KOR")+"시장을 오픈하였습니다.")
+                    .build();
+        }
+        catch(Exception e){
+            return Util.getErrorBody(e.getMessage(), new Object());
+        }
+    }
+    @GetMapping("closeMarket")
+    public BaseDto<Object> closeMarket(String nation) {
+        try{
+
+            Long updateCount = marketInfoService.closeMarket(nation);
+
+            return BaseDto.<Object>builder()
+                    .status(SUCCESS.CODE())
+                    .rsltMsg(updateCount+"개의 "+ Optional.ofNullable(nation).orElse("KOR")+"시장을 종료하였습니다.")
+                    .build();
+        }
+        catch(Exception e){
+            return Util.getErrorBody(e.getMessage(), new Object());
         }
     }
 }

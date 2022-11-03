@@ -1,8 +1,10 @@
 package com.example.stockapi.api.repository;
 
 import com.example.stockapi.api.repository.domain.StockInfo;
+import com.example.stockapi.api.repository.domain.StockInfoHistory;
 import com.example.stockapi.api.stock.StockInfoRes;
 import com.example.stockapi.api.stock.StockTopFiveAllRes;
+import com.example.stockapi.api.stockhistory.StockInfoHistoryDto;
 import com.example.stockapi.api.util.Util;
 import com.example.stockapi.config.QuerydslTestConfiguration;
 import com.querydsl.core.types.Projections;
@@ -18,7 +20,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
-import org.springframework.test.context.ActiveProfiles;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
@@ -28,21 +29,22 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static com.example.stockapi.api.repository.domain.QMarketInfo.marketInfo;
 import static com.example.stockapi.api.repository.domain.QStockInfo.stockInfo;
 import static com.example.stockapi.api.util.Util.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-@ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Import(QuerydslTestConfiguration.class)
 class StockInfoRepositoryTest {
-    private StockInfoRepository testStockInfoRepository;
     @Autowired
     private JPAQueryFactory queryFactory;
-
     private final String nation = "KOR";
     private final String marketCode = "0001";
+
+    StockInfoRepositoryTest() {
+    }
 
     public BooleanExpression eqNationOrDefault(String nation){
         if(StringUtils.isBlank(nation)){
@@ -167,7 +169,7 @@ class StockInfoRepositoryTest {
                         , stockInfo.currentPrice
                         , stockInfo.hits
                         , new CaseBuilder().when(stockInfo.buyingCount.lt(stockInfo.sellingCount)).then(stockInfo.buyingCount).otherwise(stockInfo.sellingCount).as("tradingVolume")
-                        , MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.currentPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00),2).as("growthRate")
+                        , MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.startingPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00),2).as("growthRate")
                 ))
                 .from(stockInfo)
                 .where(eqNationOrDefault(nation)
@@ -203,7 +205,7 @@ class StockInfoRepositoryTest {
                         , stockInfo.currentPrice
                         , stockInfo.hits
                         , new CaseBuilder().when(stockInfo.buyingCount.lt(stockInfo.sellingCount)).then(stockInfo.buyingCount).otherwise(stockInfo.sellingCount).as("tradingVolume")
-                        , MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.currentPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00),2).as("growthRate")
+                        , MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.startingPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00),2).as("growthRate")
                 ))
                 .from(stockInfo)
                 .where(eqNationOrDefault(nation)
@@ -238,7 +240,7 @@ class StockInfoRepositoryTest {
                                 , stockInfo.currentPrice
                                 , stockInfo.hits
                                 , new CaseBuilder().when(stockInfo.buyingCount.lt(stockInfo.sellingCount)).then(stockInfo.buyingCount).otherwise(stockInfo.sellingCount).as("tradingVolume")
-                                , MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.currentPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00), 2).as("growthRate")
+                                , MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.startingPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00), 2).as("growthRate")
                         ))
                         .from(stockInfo)
                         .where(eqNationOrDefault(nation)
@@ -287,7 +289,7 @@ class StockInfoRepositoryTest {
                         , stockInfo.currentPrice
                         , stockInfo.hits
                         , new CaseBuilder().when(stockInfo.buyingCount.lt(stockInfo.sellingCount)).then(stockInfo.buyingCount).otherwise(stockInfo.sellingCount).as("tradingVolume")
-                        , MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.currentPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00), 2).as("growthRate")
+                        , MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.startingPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00), 2).as("growthRate")
                 ))
                 .from(stockInfo)
                 .where(eqNationOrDefault(nation)
@@ -304,7 +306,7 @@ class StockInfoRepositoryTest {
                         , stockInfo.currentPrice
                         , stockInfo.hits
                         , new CaseBuilder().when(stockInfo.buyingCount.lt(stockInfo.sellingCount)).then(stockInfo.buyingCount).otherwise(stockInfo.sellingCount).as("tradingVolume")
-                        , MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.currentPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00), 2).as("growthRate")
+                        , MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.startingPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00), 2).as("growthRate")
                 ))
                 .from(stockInfo)
                 .where(eqNationOrDefault(nation)
@@ -321,7 +323,7 @@ class StockInfoRepositoryTest {
                         , stockInfo.currentPrice
                         , stockInfo.hits
                         , new CaseBuilder().when(stockInfo.buyingCount.lt(stockInfo.sellingCount)).then(stockInfo.buyingCount).otherwise(stockInfo.sellingCount).as("tradingVolume")
-                        , MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.currentPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00), 2).as("growthRate")
+                        , MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.startingPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00), 2).as("growthRate")
                 ))
                 .from(stockInfo)
                 .where(eqNationOrDefault(nation)
@@ -391,7 +393,7 @@ class StockInfoRepositoryTest {
                                 , stockInfo.currentPrice
                                 , stockInfo.hits
                                 , new CaseBuilder().when(stockInfo.buyingCount.lt(stockInfo.sellingCount)).then(stockInfo.buyingCount).otherwise(stockInfo.sellingCount).as("tradingVolume")
-                                , MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.currentPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00),2).as("growthRate")
+                                , MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.startingPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00),2).as("growthRate")
                         ))
                         .from(stockInfo)
                         .where(eqNationOrDefault(nation)
@@ -434,7 +436,7 @@ class StockInfoRepositoryTest {
                                 , stockInfo.currentPrice
                                 , stockInfo.hits
                                 , new CaseBuilder().when(stockInfo.buyingCount.lt(stockInfo.sellingCount)).then(stockInfo.buyingCount).otherwise(stockInfo.sellingCount).as("tradingVolume")
-                                , MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.currentPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00),2).as("growthRate")
+                                , MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.startingPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00),2).as("growthRate")
                         ))
                         .from(stockInfo)
                         .where(eqNationOrDefault(nation)
@@ -477,7 +479,7 @@ class StockInfoRepositoryTest {
                                 , stockInfo.currentPrice
                                 , stockInfo.hits
                                 , new CaseBuilder().when(stockInfo.buyingCount.lt(stockInfo.sellingCount)).then(stockInfo.buyingCount).otherwise(stockInfo.sellingCount).as("tradingVolume")
-                                , MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.currentPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00),2).as("growthRate")
+                                , MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.startingPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00),2).as("growthRate")
                         ))
                         .from(stockInfo)
                         .where(eqNationOrDefault(nation)
@@ -506,4 +508,29 @@ class StockInfoRepositoryTest {
         assertThat(tmplist).isEqualTo(list);
     }
 
+    @Test
+    public void stockInfoHistories_selectStockInfoHistorys(){
+        List<StockInfoHistoryDto> stockInfoHistoryList = queryFactory.select(Projections.fields(StockInfoHistoryDto.class,
+                marketInfo.marketSequence.as("historyId")
+                , stockInfo.stockCode
+                , stockInfo.stockName
+                , marketInfo.marketCode
+                , marketInfo.marketName
+                , stockInfo.startingPrice
+                , stockInfo.currentPrice.as("endingPrice")
+                , stockInfo.sellingCount
+                , stockInfo.buyingCount
+                , stockInfo.hits
+                , new CaseBuilder().when(stockInfo.buyingCount.lt(stockInfo.sellingCount)).then(stockInfo.buyingCount).otherwise(stockInfo.sellingCount).as("tradingVolume")
+                , MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.currentPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00),2).as("growthRate")
+        ))
+        .from(stockInfo)
+        .join(marketInfo)
+        .on(stockInfo.marketCode.eq(marketInfo.marketCode))
+        .where(stockInfo.marketNation.eq(nation))
+        .fetch();
+
+        assertThat(stockInfoHistoryList.get(0).getHistoryId()).isEqualTo(0L);
+        assertThat(stockInfoHistoryList.get(0).getStockCode()).isEqualTo("005930");
+    }
 }

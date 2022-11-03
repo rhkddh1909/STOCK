@@ -34,10 +34,4 @@ public class MarketInfo {
     public MarketInfo() {
 
     }
-
-
-    public void updateMarketOpenYn(String marketOpenYn) {
-        this.marketOpenYn = marketOpenYn;
-        this.marketSequence = marketSequence + (marketOpenYn.equals("Y") ? 1L : 0L);
-    }
 }

@@ -11,6 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.stockapi.api.util.CUSTOM_CODE.RSEULT.SUCCESS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
@@ -49,7 +50,7 @@ class StockInfoControllerTest {
         //Servcie애서 reRanking() 함수가 호출되었는지 검증한다.
         then(mockStockInfoService).should().reRanking(anyString(),anyString());
 
-        assertThat(reRanking.getStatus()).isEqualTo(CUSTOM_CODE.RSEULT.SUCCESS.STATUS());
+        assertThat(reRanking.getStatus()).isEqualTo(SUCCESS.CODE());
     }
 
     @Test
@@ -63,7 +64,7 @@ class StockInfoControllerTest {
         //Servic에서 stockTopFiveAll() 함수가 호출되었는지 검증
         then(mockStockInfoService).should().stockTopFiveAll(anyString(),anyString());
 
-        assertThat(testStockTopFiveAll.getStatus()).isEqualTo(CUSTOM_CODE.RSEULT.SUCCESS.STATUS());
+        assertThat(testStockTopFiveAll.getStatus()).isEqualTo(SUCCESS.CODE());
     }
 
     @Test
@@ -77,7 +78,7 @@ class StockInfoControllerTest {
         //Servic에서 stockTopFiveAll() 함수가 호출되었는지 검증
         then(mockStockInfoService).should().stockDetailTopHits(anyInt(),anyInt(), anyString(),anyString());
 
-        assertThat(testStcokDetailTopHits.getStatus()).isEqualTo(CUSTOM_CODE.RSEULT.SUCCESS.STATUS());
+        assertThat(testStcokDetailTopHits.getStatus()).isEqualTo(SUCCESS.CODE());
     }
 
     @Test
@@ -91,7 +92,7 @@ class StockInfoControllerTest {
         //Servic에서 stockTopFiveAll() 함수가 호출되었는지 검증
         then(mockStockInfoService).should().stockDetailTopTradingVolume(anyInt(),anyInt(), anyString(),anyString());
 
-        assertThat(testStockDetailTopTradingVolume.getStatus()).isEqualTo(CUSTOM_CODE.RSEULT.SUCCESS.STATUS());
+        assertThat(testStockDetailTopTradingVolume.getStatus()).isEqualTo(SUCCESS.CODE());
     }
 
     @Test
@@ -105,7 +106,7 @@ class StockInfoControllerTest {
         //Servic에서 stockTopFiveAll() 함수가 호출되었는지 검증
         then(mockStockInfoService).should().stockDetailTopGrowthRate(anyInt(),anyInt(), anyString(),anyString());
 
-        assertThat(testStockDetailTopGrowthRate.getStatus()).isEqualTo(CUSTOM_CODE.RSEULT.SUCCESS.STATUS());
+        assertThat(testStockDetailTopGrowthRate.getStatus()).isEqualTo(SUCCESS.CODE());
     }
 
     @Test
@@ -119,6 +120,7 @@ class StockInfoControllerTest {
         //Servic에서 stockTopFiveAll() 함수가 호출되었는지 검증
         then(mockStockInfoService).should().stockDetailBottomGrowthRate(anyInt(),anyInt(), anyString(),anyString());
 
-        assertThat(testStockDetailBottomGrowthRate.getStatus()).isEqualTo(CUSTOM_CODE.RSEULT.SUCCESS.STATUS());
+        assertThat(testStockDetailBottomGrowthRate.getStatus()).isEqualTo(SUCCESS.CODE());
     }
+
 }

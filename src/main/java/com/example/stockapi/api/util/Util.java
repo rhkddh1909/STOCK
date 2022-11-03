@@ -11,6 +11,8 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import static com.example.stockapi.api.util.CUSTOM_CODE.RSEULT.ERROR;
+
 public class Util {
     public static Function<Long, Long> checkPrice = (price)->{
         if(price < 1000L) return 1L;
@@ -33,7 +35,7 @@ public class Util {
     public static <T> BaseDto<T> getErrorBody(String Message, T t){
         ObjectMapper mapper = new ObjectMapper();
         return BaseDto.<T>builder()
-                .status(CUSTOM_CODE.RSEULT.ERROR.STATUS())
+                .status(ERROR.CODE())
                 .rsltMsg(Message)
                 .build();
 

@@ -2,8 +2,10 @@ package com.example.stockapi.api.repository;
 
 import com.example.stockapi.api.exception.QueryNoExistException;
 import com.example.stockapi.api.repository.domain.StockInfo;
+import com.example.stockapi.api.repository.domain.StockInfoHistory;
 import com.example.stockapi.api.stock.StockInfoRes;
 import com.example.stockapi.api.stock.StockTopFiveAllRes;
+import com.example.stockapi.api.stockhistory.StockInfoHistoryDto;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.*;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -17,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.example.stockapi.api.repository.domain.QMarketInfo.marketInfo;
 import static com.example.stockapi.api.repository.domain.QStockInfo.stockInfo;
 
 @Repository
@@ -175,5 +178,28 @@ public class StockInfoRepository{
                 .orElse(List.of());
 
         return Optional.of(PageableExecutionUtils.getPage(growthRateList,pageable,() -> 100).get().collect(Collectors.toList()));
+    }
+
+    public Optional<List<StockInfoHistoryDto>> selectStockInfoHistorys(String nation){
+        return Optional.ofNullable(queryFactory.select(Projections.fields(StockInfoHistoryDto.class,
+                        marketInfo.marketSequence.as("historyId")
+                        , stockInfo.stockCode
+                        , stockInfo.stockName
+                        , marketInfo.marketCode
+                        , marketInfo.marketName
+                        , stockInfo.startingPrice
+                        , stockInfo.currentPrice.as("endingPrice")
+                        , stockInfo.sellingCount
+                        , stockInfo.buyingCount
+                        , stockInfo.hits
+                        , marketInfo.marketNation
+                        , new CaseBuilder().when(stockInfo.buyingCount.lt(stockInfo.sellingCount)).then(stockInfo.buyingCount).otherwise(stockInfo.sellingCount).as("tradingVolume")
+                        , MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.startingPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00),2).as("growthRate")
+                ))
+                .from(stockInfo)
+                .join(marketInfo)
+                .on(stockInfo.marketCode.eq(marketInfo.marketCode))
+                .where(eqNationOrDefault(nation))
+                .fetch());
     }
 }
