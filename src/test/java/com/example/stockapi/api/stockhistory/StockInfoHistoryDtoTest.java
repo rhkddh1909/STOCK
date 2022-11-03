@@ -1,17 +1,16 @@
 package com.example.stockapi.api.stockhistory;
 
 import com.example.stockapi.api.repository.domain.StockInfoHistory;
-import com.example.stockapi.api.repository.domain.StockInfoHistoryID;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 class StockInfoHistoryDtoTest {
     @Test
     public void stockHistoryDto_getStockInfoHistory(){
         StockInfoHistory stockInfoHistory = StockInfoHistory.builder()
-                .stockInfoHistoryID(StockInfoHistoryID.builder().historyId(1L).stockCode("000660").build())
+                .historyId(1L)
+                .stockCode("000660")
                 .stockName("SK하이닉스")
                 .marketCode("0001")
                 .marketName("KOSDAQ")

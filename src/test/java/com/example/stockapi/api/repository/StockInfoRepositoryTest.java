@@ -1,7 +1,6 @@
 package com.example.stockapi.api.repository;
 
 import com.example.stockapi.api.repository.domain.StockInfo;
-import com.example.stockapi.api.repository.domain.StockInfoHistory;
 import com.example.stockapi.api.stock.StockInfoRes;
 import com.example.stockapi.api.stock.StockTopFiveAllRes;
 import com.example.stockapi.api.stockhistory.StockInfoHistoryDto;

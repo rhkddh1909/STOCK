@@ -44,3 +44,31 @@
 - 사용자가 지정한 회차만큼의 주식정보이력을 그룹핑하여 각 기준(조회수, 상승률, 거레량)으로 Top20을 조회하여 최근 동향을 조회할 수 있는 기능을 위해 설계하였습니다.
 
 구현된 API 목록
+1. stockInfos
+- 주식목록을 조회합니다.
+2. reRanking
+- 순위를 새로 변경합니다.
+3. stockTopFiveAll
+- 모든 주제의 top5를 조회합니다.
+4. stockDetailTopHits
+- 조회수의 top100을 paging 합니다.
+5. stockDetailTopTradingVolume
+- 거래량의 top100을 paging 합니다.
+6. stockDetailTopGrowthRate
+- 상승률의 top100을 paging 합니다.
+7. stockDetailBottomGrowthRate
+- 상승률의 bottom100을 paging 합니다.
+8. marketListAll
+- 모든 시장목록을 가져옵니다.
+9. marketInfoByCode
+- 시장코드로 시장정보를 가져옵니다.
+10. marketInfoByNation 
+- 시장국가로 시장정보를 가져옵니다.
+11. openMarket
+- 싱시작을 합니다.
+12. closeMarket
+- 장종료를 하고 이력을 남깁니다.
+13. stockInfoHistories
+- 주식이력을 조회합니다.
+14. stockInfoHistoryAnalysis (analysisTerm(분석을 원하는 이전회차) 값 필수)
+- 주식 이력 통계를 조회합니다.

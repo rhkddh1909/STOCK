@@ -34,8 +34,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-web-services'
-	implementation 'org.jetbrains:annotations:20.1.0'
-    testImplementation 'org.projectlombok:lombok:1.18.22'
+	implementation 'org.jetbrains:annotations:23.0.0'
+    testImplementation 'org.projectlombok:lombok:1.18.24'
     compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'com.h2database:h2'
@@ -48,7 +48,7 @@ dependencies {
 	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
 	implementation "com.querydsl:querydsl-apt:${queryDslVersion}"
 	// QueryDSL 쿼리 로그 확인 lib
-	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.5.6'
+	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.8.1'
 }
 
 tasks.named('test') {

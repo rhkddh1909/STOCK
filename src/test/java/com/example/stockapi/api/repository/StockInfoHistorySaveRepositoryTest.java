@@ -1,7 +1,6 @@
 package com.example.stockapi.api.repository;
 
 import com.example.stockapi.api.repository.domain.StockInfoHistory;
-import com.example.stockapi.api.repository.domain.StockInfoHistoryID;
 import com.example.stockapi.api.stockhistory.StockInfoHistoryDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +20,8 @@ class StockInfoHistorySaveRepositoryTest {
     @Test
     public void createStockInfoHistory_insertStockInfoHistory(){
         StockInfoHistory stockInfoHistory = StockInfoHistory.builder()
-                .stockInfoHistoryID(StockInfoHistoryID.builder().historyId(1L).stockCode("000660").build())
+                .historyId(1L)
+                .stockCode("000660")
                 .stockName("SK하이닉스")
                 .marketCode("0001")
                 .marketName("KOSDAQ")
@@ -36,7 +36,8 @@ class StockInfoHistorySaveRepositoryTest {
                 .build();
 
         StockInfoHistory stockInfoHistory1 = StockInfoHistory.builder()
-                .stockInfoHistoryID(StockInfoHistoryID.builder().historyId(2L).stockCode("000660").build())
+                .historyId(1L)
+                .stockCode("000660")
                 .stockName("SK하이닉스")
                 .marketCode("0001")
                 .marketName("KOSDAQ")

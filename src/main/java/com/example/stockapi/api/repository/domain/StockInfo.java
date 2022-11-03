@@ -15,7 +15,7 @@ import javax.persistence.Table;
 @DynamicUpdate
 @Table(indexes =
 {
-    @Index(name="i_stockCode", columnList = "stockCode", unique = true)
+    @Index(name="i_stockCode", columnList = "stockCode")
     , @Index(name="i_marketCode", columnList = "marketCode")
     , @Index(name="i_marketNation", columnList = "marketNation")
 })

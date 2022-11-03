@@ -4,23 +4,24 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Index;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Getter
 @Builder
 @EqualsAndHashCode
+@IdClass(StockInfoHistoryId.class)
 @Table(indexes =
 {
-    @Index(name="i_stockInfoHistoryID", columnList = "stockInfoHistoryID", unique = true)
-    , @Index(name="i_marketNation", columnList = "marketNation")
+    @Index(name="i_historyId", columnList = "historyId")
+    , @Index(name="i_stockCode2", columnList = "stockCode")
+    , @Index(name="i_marketNation2", columnList = "marketNation")
 })
 public class StockInfoHistory{
-    @EmbeddedId
-    private StockInfoHistoryID stockInfoHistoryID;
+    @Id
+    private Long historyId;
+    @Id
+    private String stockCode;
     /**주식명**/
     private String stockName;
     /**시장코드**/
@@ -44,8 +45,9 @@ public class StockInfoHistory{
     /**주식국가**/
     private String marketNation;
 
-    public StockInfoHistory(StockInfoHistoryID stockInfoHistoryID, String stockName, String marketCode, String marketName, Long startingPrice, Long endingPrice, Long sellingCount, Long buyingCount, Long tradingVolume, Double growthRate, Long hits, String marketNation) {
-        this.stockInfoHistoryID = stockInfoHistoryID;
+    public StockInfoHistory(Long historyId, String stockCode, String stockName, String marketCode, String marketName, Long startingPrice, Long endingPrice, Long sellingCount, Long buyingCount, Long tradingVolume, Double growthRate, Long hits, String marketNation) {
+        this.historyId = historyId;
+        this.stockCode = stockCode;
         this.stockName = stockName;
         this.marketCode = marketCode;
         this.marketName = marketName;

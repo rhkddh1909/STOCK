@@ -4,7 +4,6 @@ import com.example.stockapi.api.repository.MarketInfoRepository;
 import com.example.stockapi.api.repository.StockInfoHistorySaveRepository;
 import com.example.stockapi.api.repository.StockInfoRepository;
 import com.example.stockapi.api.repository.domain.StockInfoHistory;
-import com.example.stockapi.api.repository.domain.StockInfoHistoryID;
 import com.example.stockapi.api.stockhistory.StockInfoHistoryDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -92,7 +91,8 @@ class MarketInfoServiceTest {
     public void closeMarket_thenCallbulkUpdateMarketInfo(){
         //Stubbing (given)
         StockInfoHistory stockInfoHistory = StockInfoHistory.builder()
-                .stockInfoHistoryID(StockInfoHistoryID.builder().historyId(1L).stockCode("000660").build())
+                .historyId(1L)
+                .stockCode("000660")
                 .stockName("SK하이닉스")
                 .marketCode("0001")
                 .marketName("KOSDAQ")

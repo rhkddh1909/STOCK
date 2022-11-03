@@ -1,19 +1,15 @@
 package com.example.stockapi.api.repository.domain;
 
-import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Embeddable;
 import java.io.Serializable;
 
-@Embeddable
 @NoArgsConstructor
 @Getter
 @EqualsAndHashCode
-@Builder
-public class StockInfoHistoryID implements Serializable {
+public class StockInfoHistoryId implements Serializable {
     /**
      * 회차
      **/
@@ -23,7 +19,7 @@ public class StockInfoHistoryID implements Serializable {
      **/
     private String stockCode;
 
-    public StockInfoHistoryID(Long historyId, String stockCode) {
+    public StockInfoHistoryId(Long historyId, String stockCode) {
         this.historyId = historyId;
         this.stockCode = stockCode;
     }

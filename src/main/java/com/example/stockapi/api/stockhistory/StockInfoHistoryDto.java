@@ -1,7 +1,6 @@
 package com.example.stockapi.api.stockhistory;
 
 import com.example.stockapi.api.repository.domain.StockInfoHistory;
-import com.example.stockapi.api.repository.domain.StockInfoHistoryID;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -55,7 +54,8 @@ public class StockInfoHistoryDto {
 
     public StockInfoHistory getStockInfoHistory(){
         return StockInfoHistory.builder()
-                .stockInfoHistoryID(new StockInfoHistoryID(historyId,stockCode))
+                .historyId(1L)
+                .stockCode("000660")
                 .stockName(stockName)
                 .marketCode(marketCode)
                 .marketName(marketName)

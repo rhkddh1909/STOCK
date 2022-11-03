@@ -4,6 +4,7 @@ import com.example.stockapi.api.util.BaseDto;
 import com.example.stockapi.api.util.Util;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
@@ -24,6 +25,21 @@ public class StockInfoHistoryController {
                     .status(SUCCESS.CODE())
                     .rsltMsg("")
                     .rsltData(stockInfoHistoryDtos)
+                    .build();
+        }
+        catch(Exception e){
+            return Util.getErrorBody(e.getMessage(),new ArrayList<>());
+        }
+    }
+    @GetMapping("stockInfoHistoryAnalysis")
+    public BaseDto<List<StockInfoHistoryDto>> stockInfoHistoryAnalysis(String nation, String stockCode, @RequestParam long analysisTerm) {
+        try{
+            List<StockInfoHistoryDto> stockInfoHistoryAnalysisDtos = stockInfoHistoryService.stockInfoHistoryAnalysis(nation,stockCode,analysisTerm);
+
+            return BaseDto.<List<StockInfoHistoryDto>>builder()
+                    .status(SUCCESS.CODE())
+                    .rsltMsg("")
+                    .rsltData(stockInfoHistoryAnalysisDtos)
                     .build();
         }
         catch(Exception e){
