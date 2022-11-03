@@ -1,7 +1,6 @@
 package com.example.stockapi.api.repository;
 
 import com.example.stockapi.api.marketinfo.MarketInfoRes;
-import com.example.stockapi.api.repository.domain.MarketInfo;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;

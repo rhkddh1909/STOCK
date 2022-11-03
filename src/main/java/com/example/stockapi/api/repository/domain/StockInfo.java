@@ -34,9 +34,12 @@ public class StockInfo {
     private Long buyingCount;
     /**조회수**/
     private Long hits;
+    /**주식국가**/
+    private String marketNation;
+
     protected StockInfo() {}
 
-    public StockInfo(String stockCode, String stockName, String marketCode, String marketName, Long startingPrice, Long currentPrice, Long sellingCount, Long buyingCount, Long hits) {
+    public StockInfo(String stockCode, String stockName, String marketCode, String marketName, Long startingPrice, Long currentPrice, Long sellingCount, Long buyingCount, Long hits, String marketNation) {
         this.stockCode = stockCode;
         this.stockName = stockName;
         this.marketCode = marketCode;
@@ -46,6 +49,7 @@ public class StockInfo {
         this.sellingCount = sellingCount;
         this.buyingCount = buyingCount;
         this.hits = hits;
+        this.marketNation = marketNation;
     }
 
     /**

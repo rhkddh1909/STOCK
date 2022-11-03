@@ -9,7 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class StockInfoTest {
     @Test
     public void stockInfo_getStockInfoResTest(){
-        StockInfo stockInfoTest = new StockInfo("0001","주식명","시장코드","시장명",100L,90L,10L,20L,0L);
+        StockInfo stockInfoTest = new StockInfo("0001","주식명","시장코드","시장명",100L,90L,10L,20L,0L,"KOR");
 
         StockInfoRes stockInfoResTest = stockInfoTest.getStockInfoRes();
 
@@ -18,21 +18,21 @@ class StockInfoTest {
 
     @Test
     public void stockInfo_getTradingVolumeTest(){
-        StockInfo stockInfoTest = new StockInfo("0001","주식명", "시장코드", "주식명",100L,90L,10L,20L,0L);
+        StockInfo stockInfoTest = new StockInfo("0001","주식명", "시장코드", "주식명",100L,90L,10L,20L,0L,"KOR");
 
         assertThat(stockInfoTest.getTradingVolume()).isEqualTo(10L);
     }
 
     @Test
     public void stockInfo_updateHitsTest(){
-        StockInfo stockInfoTest = new StockInfo("0001","주식명", "시장코드", "주식명",100L,90L,10L,20L,0L);
+        StockInfo stockInfoTest = new StockInfo("0001","주식명", "시장코드", "주식명",100L,90L,10L,20L,0L,"KOR");
         Long tmpLong = stockInfoTest.updateHits();
         assertThat(tmpLong).isBetween(50L,500L);
     }
 
     @Test
     public void stockInfo_updateCurrentPriceTest(){
-        StockInfo stockInfoTest = new StockInfo("0001","주식명", "시장코드", "주식명",100L,90L,10L,20L,0L);
+        StockInfo stockInfoTest = new StockInfo("0001","주식명", "시장코드", "주식명",100L,90L,10L,20L,0L,"KOR");
 
         Long currentPrice = stockInfoTest.updateCurrPrice();
 
@@ -41,7 +41,7 @@ class StockInfoTest {
 
     @Test
     public void stockInfo_updateBuyingSellingCount(){
-        StockInfo stockInfoTest = new StockInfo("0001","주식명", "시장코드", "주식명",100L,90L,10L,20L,0L);
+        StockInfo stockInfoTest = new StockInfo("0001","주식명", "시장코드", "주식명",100L,90L,10L,20L,0L,"KOR");
         Long buyingCount = stockInfoTest.updateBuyingCount();
         Long sellingCount = stockInfoTest.updateSellingCount();
 
@@ -51,7 +51,7 @@ class StockInfoTest {
 
     @Test
     public void stockInfo_reRanking(){
-        StockInfo stockInfoTest = new StockInfo("0001","주식명", "시장코드", "주식명",100L,90L,10L,20L,0L);
+        StockInfo stockInfoTest = new StockInfo("0001","주식명", "시장코드", "주식명",100L,90L,10L,20L,0L,"KOR");
         stockInfoTest.reRanking();
 
         assertThat(stockInfoTest.getStockCode()).isEqualTo(stockInfoTest.getStockCode());

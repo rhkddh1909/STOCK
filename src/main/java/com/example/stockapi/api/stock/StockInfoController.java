@@ -19,9 +19,9 @@ public class StockInfoController {
 
 
     @GetMapping("stockInfos")
-    public BaseDto<List<StockInfoRes>> getStockInfoList() {
+    public BaseDto<List<StockInfoRes>> getStockInfoList(@RequestParam String nation) {
         try {
-            List<StockInfoRes> stockInfoRes = stockInfoService.stockInfos();
+            List<StockInfoRes> stockInfoRes = stockInfoService.stockInfos(nation);
 
             return BaseDto.<List<StockInfoRes>>builder()
                     .status(CUSTOM_CODE.RSEULT.SUCCESS.STATUS())
@@ -34,9 +34,9 @@ public class StockInfoController {
         }
     }
     @GetMapping("reRanking")
-    public BaseDto<Object> reRanking() {
+    public BaseDto<Object> reRanking(@RequestParam String nation) {
         try{
-            Long reRankCount = stockInfoService.reRanking();
+            Long reRankCount = stockInfoService.reRanking(nation);
 
             return BaseDto.builder()
                     .status(CUSTOM_CODE.RSEULT.SUCCESS.STATUS())
@@ -48,9 +48,9 @@ public class StockInfoController {
         }
     }
     @GetMapping("stockTopFiveAll")
-    public BaseDto<StockTopFiveAllRes<List<StockInfoRes>>> stockTopFiveAll() {
+    public BaseDto<StockTopFiveAllRes<List<StockInfoRes>>> stockTopFiveAll(@RequestParam String nation) {
         try{
-            StockTopFiveAllRes<List<StockInfoRes>> stockTopFiveAllRes = stockInfoService.stockTopFiveAll();
+            StockTopFiveAllRes<List<StockInfoRes>> stockTopFiveAllRes = stockInfoService.stockTopFiveAll(nation);
 
             return BaseDto.<StockTopFiveAllRes<List<StockInfoRes>>>builder()
                     .status(CUSTOM_CODE.RSEULT.SUCCESS.STATUS())
@@ -63,9 +63,9 @@ public class StockInfoController {
         }
     }
     @GetMapping("stockDetailTopHits")
-    public BaseDto<List<StockInfoRes>> stockDetailTopHits(@RequestParam int pageNum , @RequestParam int pageSize) {
+    public BaseDto<List<StockInfoRes>> stockDetailTopHits(@RequestParam int pageNum , @RequestParam int pageSize, @RequestParam String nation) {
         try{
-            List<StockInfoRes> stockDetailTopHitsRes = stockInfoService.stockDetailTopHits(pageNum, pageSize);
+            List<StockInfoRes> stockDetailTopHitsRes = stockInfoService.stockDetailTopHits(pageNum, pageSize, nation);
 
             return BaseDto.<List<StockInfoRes>>builder()
                     .status(CUSTOM_CODE.RSEULT.SUCCESS.STATUS())
@@ -79,9 +79,9 @@ public class StockInfoController {
     }
 
     @GetMapping("stockDetailTopTradingVolume")
-    public BaseDto<List<StockInfoRes>> stockDetailTopTradingVolume(@RequestParam int pageNum , @RequestParam int pageSize) {
+    public BaseDto<List<StockInfoRes>> stockDetailTopTradingVolume(@RequestParam int pageNum , @RequestParam int pageSize, @RequestParam String nation) {
         try{
-            List<StockInfoRes> stockDetailTopHitsRes = stockInfoService.stockDetailTopTradingVolume(pageNum, pageSize);
+            List<StockInfoRes> stockDetailTopHitsRes = stockInfoService.stockDetailTopTradingVolume(pageNum, pageSize, nation);
 
             return BaseDto.<List<StockInfoRes>>builder()
                     .status(CUSTOM_CODE.RSEULT.SUCCESS.STATUS())
@@ -95,9 +95,9 @@ public class StockInfoController {
     }
 
     @GetMapping("stockDetailTopGrowthRate")
-    public BaseDto<List<StockInfoRes>> stockDetailTopGrowthRate(@RequestParam int pageNum , @RequestParam int pageSize) {
+    public BaseDto<List<StockInfoRes>> stockDetailTopGrowthRate(@RequestParam int pageNum , @RequestParam int pageSize, @RequestParam String nation) {
         try{
-            List<StockInfoRes> stockDetailTopHitsRes = stockInfoService.stockDetailTopGrowthRate(pageNum, pageSize);
+            List<StockInfoRes> stockDetailTopHitsRes = stockInfoService.stockDetailTopGrowthRate(pageNum, pageSize, nation);
 
             return BaseDto.<List<StockInfoRes>>builder()
                     .status(CUSTOM_CODE.RSEULT.SUCCESS.STATUS())
@@ -111,9 +111,9 @@ public class StockInfoController {
     }
 
     @GetMapping("stockDetailBottomGrowthRate")
-    public BaseDto<List<StockInfoRes>> stockDetailBottomGrowthRate(@RequestParam int pageNum , @RequestParam int pageSize) {
+    public BaseDto<List<StockInfoRes>> stockDetailBottomGrowthRate(@RequestParam int pageNum , @RequestParam int pageSize, @RequestParam String nation) {
         try{
-            List<StockInfoRes> stockDetailTopHitsRes = stockInfoService.stockDetailBottomGrowthRate(pageNum, pageSize);
+            List<StockInfoRes> stockDetailTopHitsRes = stockInfoService.stockDetailBottomGrowthRate(pageNum, pageSize, nation);
 
             return BaseDto.<List<StockInfoRes>>builder()
                     .status(CUSTOM_CODE.RSEULT.SUCCESS.STATUS())

@@ -5,13 +5,12 @@ import com.example.stockapi.api.stock.StockInfoRes;
 import com.example.stockapi.api.stock.StockTopFiveAllRes;
 import com.example.stockapi.api.util.Util;
 import com.example.stockapi.config.QuerydslTestConfiguration;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
-import com.querydsl.core.types.dsl.CaseBuilder;
-import com.querydsl.core.types.dsl.Expressions;
-import com.querydsl.core.types.dsl.MathExpressions;
-import com.querydsl.core.types.dsl.StringPath;
+import com.querydsl.core.types.dsl.*;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.junit.jupiter.api.Test;
+import org.junit.platform.commons.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -43,9 +42,25 @@ class StockInfoRepositoryTest {
     @Autowired
     private JPAQueryFactory queryFactory;
 
+    private final String nation = "KOR";
+
+    public BooleanExpression eqNationOrDefault(String nation){
+        if(StringUtils.isBlank(nation)){
+            return stockInfo.marketNation.eq("KOR");
+        }
+        else{
+            return stockInfo.marketNation.eq(nation);
+        }
+    }
+
     @Test
     public void selectStockInfo_findAllTest(){
-        assertThat(Optional.of(queryFactory.selectFrom(stockInfo).fetch()).orElse(List.of())).isNotEmpty();
+        assertThat(Optional.of(queryFactory
+                        .selectFrom(stockInfo)
+                        .where(eqNationOrDefault(nation))
+                .fetch())
+                .orElse(List.of()))
+                .isNotEmpty();
     }
 
     @Test
@@ -53,6 +68,7 @@ class StockInfoRepositoryTest {
     public void updateStockInfo_HitsTest(){
         Optional.of(queryFactory
                 .selectFrom(stockInfo)
+                .where(eqNationOrDefault(nation))
                 .fetch())
                 .orElse(List.of())
                 .stream()
@@ -68,7 +84,11 @@ class StockInfoRepositoryTest {
     @Test
     @Transactional
     public void updateStockInfo_reRankingTest(){
-        List<StockInfo> stockInfoList = Optional.of(queryFactory.selectFrom(stockInfo).fetch()).orElse(List.of());
+        List<StockInfo> stockInfoList = Optional.of(queryFactory
+                .selectFrom(stockInfo)
+                .where(eqNationOrDefault(nation))
+                .fetch())
+                .orElse(List.of());
         List<Long> askingPriceList = stockInfoList.stream()
                 .map(item-> checkPrice.apply(item.getCurrentPrice()))
                 .toList();
@@ -96,6 +116,7 @@ class StockInfoRepositoryTest {
         stockInfoList.forEach(StockInfo::updateCurrPrice);
         List<Long> hitsList = Optional.ofNullable(queryFactory
                 .selectFrom(stockInfo)
+                .where(eqNationOrDefault(nation))
                 .orderBy(stockInfo.hits.desc())
                 .limit(5)
                 .fetch())
@@ -113,7 +134,7 @@ class StockInfoRepositoryTest {
 
     @Test
     public void selectStockInfo_findTradingVolumeTopFiveTest(){
-        List<StockInfo> stockInfoList = Optional.of(queryFactory.selectFrom(stockInfo).fetch()).orElse(List.of());
+        List<StockInfo> stockInfoList = Optional.of(queryFactory.selectFrom(stockInfo).where(eqNationOrDefault(nation)).fetch()).orElse(List.of());
         stockInfoList.forEach(StockInfo::reRanking);
         StringPath aliasTradingVolume = Expressions.stringPath("tradingVolume");
 
@@ -128,6 +149,7 @@ class StockInfoRepositoryTest {
                         , MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.currentPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00),2).as("growthRate")
                 ))
                 .from(stockInfo)
+                .where(eqNationOrDefault(nation))
                 .orderBy(aliasTradingVolume.desc())
                 .limit(5)
                 .fetch())
@@ -146,7 +168,7 @@ class StockInfoRepositoryTest {
 
     @Test
     public void selectStockInfo_findGrowthRateTopFiveTest(){
-        List<StockInfo> stockInfoList = Optional.of(queryFactory.selectFrom(stockInfo).fetch()).orElse(List.of());
+        List<StockInfo> stockInfoList = Optional.of(queryFactory.selectFrom(stockInfo).where(eqNationOrDefault(nation)).fetch()).orElse(List.of());
         stockInfoList.forEach(StockInfo::reRanking);
         StringPath aliasGrowthRate = Expressions.stringPath("growthRate");
 
@@ -161,6 +183,7 @@ class StockInfoRepositoryTest {
                         , MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.currentPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00),2).as("growthRate")
                 ))
                 .from(stockInfo)
+                .where(eqNationOrDefault(nation))
                 .orderBy(aliasGrowthRate.desc())
                 .limit(5)
                 .fetch())
@@ -179,7 +202,7 @@ class StockInfoRepositoryTest {
 
     @Test
     public void selectStockInfo_findGrowthRateBottomFiveTest(){
-        List<StockInfo> stockInfoList = Optional.of(queryFactory.selectFrom(stockInfo).fetch()).orElse(List.of());
+        List<StockInfo> stockInfoList = Optional.of(queryFactory.selectFrom(stockInfo).where(eqNationOrDefault(nation)).fetch()).orElse(List.of());
         stockInfoList.forEach(StockInfo::reRanking);
 
         StringPath aliasGrowthRate = Expressions.stringPath("growthRate");
@@ -194,6 +217,7 @@ class StockInfoRepositoryTest {
                                 , MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.currentPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00), 2).as("growthRate")
                         ))
                         .from(stockInfo)
+                        .where(eqNationOrDefault(nation))
                         .orderBy(aliasGrowthRate.asc())
                         .limit(5)
                         .fetch())
@@ -211,7 +235,7 @@ class StockInfoRepositoryTest {
 
     @Test
     public void selectStockInfo_findTopFiveAllTest(){
-        List<StockInfo> stockInfoList = Optional.of(queryFactory.selectFrom(stockInfo).fetch()).orElse(List.of());
+        List<StockInfo> stockInfoList = Optional.of(queryFactory.selectFrom(stockInfo).where(eqNationOrDefault(nation)).fetch()).orElse(List.of());
         stockInfoList.forEach(StockInfo::reRanking);
 
         StringPath aliasTradingVolume = Expressions.stringPath("tradingVolume");
@@ -220,6 +244,7 @@ class StockInfoRepositoryTest {
         StockTopFiveAllRes<List<StockInfoRes>> queryResult = new StockTopFiveAllRes<List<StockInfoRes>>();
         queryResult.setStockTopFiveHits(Optional.of(queryFactory
                 .selectFrom(stockInfo)
+                .where(eqNationOrDefault(nation))
                 .orderBy(stockInfo.hits.desc())
                 .limit(5)
                 .fetch()
@@ -238,6 +263,7 @@ class StockInfoRepositoryTest {
                         , MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.currentPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00), 2).as("growthRate")
                 ))
                 .from(stockInfo)
+                .where(eqNationOrDefault(nation))
                 .orderBy(aliasTradingVolume.desc())
                 .limit(5)
                 .fetch()).orElse(List.of()));
@@ -253,6 +279,7 @@ class StockInfoRepositoryTest {
                         , MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.currentPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00), 2).as("growthRate")
                 ))
                 .from(stockInfo)
+                .where(eqNationOrDefault(nation))
                 .orderBy(aliasGrowthRate.desc())
                 .limit(5)
                 .fetch()).orElse(List.of()));
@@ -268,6 +295,7 @@ class StockInfoRepositoryTest {
                         , MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.currentPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00), 2).as("growthRate")
                 ))
                 .from(stockInfo)
+                .where(eqNationOrDefault(nation))
                 .orderBy(aliasGrowthRate.asc())
                 .limit(5)
                 .fetch()).orElse(List.of()));
@@ -287,11 +315,12 @@ class StockInfoRepositoryTest {
 
     @Test
     public void selectStockInfo_findDetailTopHits(){
-        List<StockInfo> stockInfoList = Optional.of(queryFactory.selectFrom(stockInfo).fetch()).orElse(List.of());
+        List<StockInfo> stockInfoList = Optional.of(queryFactory.selectFrom(stockInfo).where(eqNationOrDefault(nation)).fetch()).orElse(List.of());
         stockInfoList.forEach(StockInfo::reRanking);
         Pageable pageable = PageRequest.of(0,20);
         List<Long> hitsList = Optional.ofNullable(queryFactory
                         .selectFrom(stockInfo)
+                        .where(eqNationOrDefault(nation))
                         .orderBy(stockInfo.hits.desc())
                         .offset(pageable.getOffset())
                         .limit(pageable.getPageSize())
@@ -317,7 +346,7 @@ class StockInfoRepositoryTest {
 
     @Test
     public void selectStockInfo_findDetailTopTradingVolume(){
-        List<StockInfo> stockInfoList = Optional.of(queryFactory.selectFrom(stockInfo).fetch()).orElse(List.of());
+        List<StockInfo> stockInfoList = Optional.of(queryFactory.selectFrom(stockInfo).where(eqNationOrDefault(nation)).fetch()).orElse(List.of());
         stockInfoList.forEach(StockInfo::reRanking);
         Pageable pageable = PageRequest.of(0,20);
         StringPath aliasTradingVolume = Expressions.stringPath("tradingVolume");
@@ -332,6 +361,7 @@ class StockInfoRepositoryTest {
                                 , MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.currentPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00),2).as("growthRate")
                         ))
                         .from(stockInfo)
+                        .where(eqNationOrDefault(nation))
                         .orderBy(aliasTradingVolume.desc())
                         .offset(pageable.getOffset())
                         .limit(pageable.getPageSize())
@@ -357,7 +387,7 @@ class StockInfoRepositoryTest {
 
     @Test
     public void selectStockInfo_findDetailTopGrowThRate(){
-        List<StockInfo> stockInfoList = Optional.of(queryFactory.selectFrom(stockInfo).fetch()).orElse(List.of());
+        List<StockInfo> stockInfoList = Optional.of(queryFactory.selectFrom(stockInfo).where(eqNationOrDefault(nation)).fetch()).orElse(List.of());
         stockInfoList.forEach(StockInfo::reRanking);
         Pageable pageable = PageRequest.of(0,20);
         StringPath aliasGrowthRate = Expressions.stringPath("growthRate");
@@ -372,6 +402,7 @@ class StockInfoRepositoryTest {
                                 , MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.currentPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00),2).as("growthRate")
                         ))
                         .from(stockInfo)
+                        .where(eqNationOrDefault(nation))
                         .orderBy(aliasGrowthRate.desc())
                         .offset(pageable.getOffset())
                         .limit(pageable.getPageSize())
@@ -397,7 +428,7 @@ class StockInfoRepositoryTest {
 
     @Test
     public void selectStockInfo_findDetailBottomGrowThRate(){
-        List<StockInfo> stockInfoList = Optional.of(queryFactory.selectFrom(stockInfo).fetch()).orElse(List.of());
+        List<StockInfo> stockInfoList = Optional.of(queryFactory.selectFrom(stockInfo).where(eqNationOrDefault(nation)).fetch()).orElse(List.of());
         stockInfoList.forEach(StockInfo::reRanking);
         Pageable pageable = PageRequest.of(0,20);
         StringPath aliasGrowthRate = Expressions.stringPath("growthRate");
@@ -412,6 +443,7 @@ class StockInfoRepositoryTest {
                                 , MathExpressions.round(stockInfo.currentPrice.doubleValue().subtract(stockInfo.currentPrice.doubleValue()).divide(stockInfo.startingPrice.doubleValue()).multiply(100.00),2).as("growthRate")
                         ))
                         .from(stockInfo)
+                        .where(eqNationOrDefault(nation))
                         .orderBy(aliasGrowthRate.asc())
                         .offset(pageable.getOffset())
                         .limit(pageable.getPageSize())
